@@ -30,5 +30,24 @@ namespace Scheduler.Controllers
             return Content(year + "/" + month);
         }
 
+        public ActionResult newOrder()
+        {
+            return View();
+        }
+
+
+        // POST: Orders
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult newOrder(Order order)
+        {
+            if (ModelState.IsValid) 
+            {
+                RedirectToAction("Index");
+            }
+
+            return View();
+        }
+
     }
 }
