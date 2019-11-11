@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Scheduler.Models.Part>
+
+@{
+    ViewBag.Title = "ViewParts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>View Parts</h2>
+
+<p>
+    @Html.ActionLink("Create New", "newPart")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.partName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.side)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.partName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.side)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.partId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.partId }) |
+            @Html.ActionLink("Delete", "deletePart", new { id=item.partId })
+        </td>
+    </tr>
+}
+
+</table>

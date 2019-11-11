@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Scheduler.Models;
+using DataLibrary;
+using DataLibrary.BusinessLogic;
 
 namespace Scheduler.Controllers
 {
@@ -35,6 +37,29 @@ namespace Scheduler.Controllers
             return View();
         }
 
+        public ActionResult ViewOrders()
+        {
+            ViewBag.Message = "Order List";
+
+            var data = OrderProcessor.LoadOrder();
+
+            List<Order> order = new List<Order>();
+
+            foreach (var row in data)
+            {
+                order.Add(new Order
+                {
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    projectName = row.projectName,
+                    orderDate = row.orderDate,
+                    shipDate = row.orderDate,
+                    quantity = row.quantity
+                });
+            }
+
+            return View(order);
+        }
 
         // POST: Orders
         [HttpPost]
@@ -43,7 +68,15 @@ namespace Scheduler.Controllers
         {
             if (ModelState.IsValid) 
             {
-                RedirectToAction("Index");
+
+                int created = OrderProcessor.CreateOrder(
+                    order.orderId,
+                    order.partId,
+                    order.projectName,
+                    order.orderDate,
+                    order.shipDate,
+                    order.quantity);
+                RedirectToAction("ViewOrders");
             }
 
             return View();

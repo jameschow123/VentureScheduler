@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Foolproof;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Web;
 
 namespace Scheduler.Models
 {
-    public class Order
+    public class Order : IValidatableObject
     {
         [Display(Name = "Order ID")]
         [Required(ErrorMessage = "Order ID is required!")]
@@ -26,6 +27,7 @@ namespace Scheduler.Models
         [Display(Name = "Ship Date")]
         [DataType(DataType.Date)]
         [Required(ErrorMessage = "Ship Date is required!")]
+        [GreaterThan("orderDate")]
         public DateTime shipDate { get; set; }
         [Display(Name = "Quantity")]
         [Required(ErrorMessage = "Quantity is required!")]
@@ -33,22 +35,26 @@ namespace Scheduler.Models
         public int quantity { get; set; }
 
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            if (orderDate < shipDate)
+            List<ValidationResult> res = new List<ValidationResult>();
+           
+            if (orderDate > shipDate)
             {
-                yield return
-                  new ValidationResult(errorMessage: "orderDate must be earlier than shipDate",
-                                       memberNames: new[] { "EndDate" });
-            }
+                ValidationResult mss = new ValidationResult("orderdate must be before shipdate");
+                res.Add(mss);
 
+            }
             if (shipDate < DateTime.Today)
             {
-                yield return
-                  new ValidationResult(errorMessage: "Ship date cannot be earlier then today's date",
-                                       memberNames: new[] { "EndDate" });
+                ValidationResult mss = new ValidationResult("shipdate must be greater today");
+                res.Add(mss);
+
             }
 
+            return res;
         }
+
+        
     }
 }
