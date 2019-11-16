@@ -9,7 +9,11 @@
 
 <p>
     @Html.ActionLink("Create New", "newOrder")
+
 </p>
+
+
+
 <table class="table">
     <tr>
         <th>
@@ -33,32 +37,59 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.orderId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.partId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.projectName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.orderDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.shipDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.quantity)
-    </td>
-    <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.orderId }) |
-        @Html.ActionLink("Details", "Details", new { id = item.orderId }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.orderId })
-    </td>
-</tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.orderId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.partId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.projectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.orderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.shipDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.orderId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.orderId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.orderId })
+            </td>
+        </tr>
+    }
+
 
 </table>
+
+
+
+
+
+
+@if (TempData["newOrderResult"] != null)
+{
+    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+        if (@TempData["newOrderResult"] == 1)
+            swal("Success!", "New order is added!", "success");
+        else if (@TempData["newOrderResult"] == 2)
+                    swal("Success!", "Order is deleted!", "success");
+        else
+            swal("Error!", "An error has occurred!", "error");
+
+
+
+    </script>
+}

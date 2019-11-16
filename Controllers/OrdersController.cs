@@ -39,7 +39,7 @@ namespace Scheduler.Controllers
 
         public ActionResult ViewOrders()
         {
-            ViewBag.Message = "Order List";
+            //ViewBag.Message = "Order List";
 
             var data = OrderProcessor.LoadOrder();
 
@@ -66,17 +66,52 @@ namespace Scheduler.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult newOrder(Order order)
         {
-            if (ModelState.IsValid) 
+
+            int created = 0;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                     created = OrderProcessor.CreateOrder(
+                        order.orderId,
+                        order.partId,
+                        order.projectName,
+                        order.orderDate,
+                        order.shipDate,
+                        order.quantity);
+
+
+
+
+
+                    TempData["newOrderResult"] = created;
+                    return RedirectToAction("ViewOrders");
+                }
+                catch (Exception ex)
+                {
+                    TempData["newOrderResult"] = created;
+                    return RedirectToAction("ViewOrders");
+                    //return View(ex.Message);
+                }
+
+            }
+
+                ModelState.AddModelError("", "Error");
+                return View();
+            }
+
+
+        public ActionResult deleteOrder(int id)
+        {
+            if (ModelState.IsValid)
             {
 
-                int created = OrderProcessor.CreateOrder(
-                    order.orderId,
-                    order.partId,
-                    order.projectName,
-                    order.orderDate,
-                    order.shipDate,
-                    order.quantity);
-                RedirectToAction("ViewOrders");
+                int deleted = PartProcessor.DeletePart(
+                    id
+                    );
+
+                return RedirectToAction("ViewParts");
+
             }
 
             return View();

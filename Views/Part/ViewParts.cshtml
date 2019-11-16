@@ -21,20 +21,47 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.partName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.side)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.partId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.partId }) |
-            @Html.ActionLink("Delete", "deletePart", new { id=item.partId })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.partName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.side)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.partId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.partId }) |
+                @Html.ActionLink("Delete", "deletePart", new { id = item.partId })
+            </td>
+        </tr>
+    }
 
 </table>
+
+
+@if (TempData["newPartResult"] != null)
+{
+    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+        if (@TempData["newPartResult"] == 1)
+            swal("Success!", "New part is added!", "success");
+        else if (@TempData["newPartResult"] == 2)
+                    swal("Success!", "Part is deleted!", "success");
+        else
+            swal("Error!", "An error has occurred!", "error");
+
+
+
+    </script>
+   
+
+   
+
+}
+

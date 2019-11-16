@@ -44,14 +44,28 @@ namespace Scheduler.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult newPart(Part part)
         {
+
+            int created = 0;
             if (ModelState.IsValid)
             {
+                try
+                {
+                    created = PartProcessor.CreatePart(
+                       part.partName,
+                       part.side);
 
-                int created = PartProcessor.CreatePart(
-                    part.partName,
-                    part.side);
 
-                return RedirectToAction("ViewParts");
+                    
+                   TempData["newPartResult"] = created;              
+                    return RedirectToAction("ViewParts");
+                }
+                catch (Exception ex)
+                {
+                    TempData["newPartResult"] = "An error has occurred!";
+                    return RedirectToAction("ViewParts");
+
+
+                }
             }
 
             return View();
@@ -60,15 +74,27 @@ namespace Scheduler.Controllers
 
         public ActionResult deletePart(int id)
         {
+
+            int deleted = 0;
             if (ModelState.IsValid)
             {
-
-                int deleted = PartProcessor.DeletePart(
+                try
+                {
+                    deleted = PartProcessor.DeletePart(
                     id
                     );
 
-                return RedirectToAction("ViewParts");
+                    TempData["newPartResult"] = 2;
+                    return RedirectToAction("ViewParts");
 
+                }
+                catch (Exception ex)
+                {
+                    TempData["partDeleted"] = deleted;
+                    return RedirectToAction("ViewParts");
+
+
+                }
             }
 
             return View();
