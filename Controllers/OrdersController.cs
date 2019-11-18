@@ -106,11 +106,11 @@ namespace Scheduler.Controllers
             if (ModelState.IsValid)
             {
 
-                int deleted = PartProcessor.DeletePart(
+                int deleted = OrderProcessor.DeleteOrder(
                     id
                     );
 
-                return RedirectToAction("ViewParts");
+                return RedirectToAction("ViewOrders");
 
             }
 
