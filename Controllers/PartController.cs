@@ -100,6 +100,36 @@ namespace Scheduler.Controllers
             return View();
         }
 
+        // method checks if partName has been taken
+        [HttpPost]
+        public JsonResult CheckPartName(string partName,int side)
+        {
+            
+            List <Part> parts = new List<Part>();
+            // gets the list of parts
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+                });
+            }
+
+            
+            // Checks thru the list of parts to see if parts exist in database
+            bool isValid = !parts.ToList().Exists(p => p.partName.Equals(partName, StringComparison.CurrentCultureIgnoreCase));
+            if (isValid == true)
+            isValid = parts.ToList().Exists(p => p.side.Equals(side));
+
+
+            return Json(isValid);
+        }
+
+
 
     }
 }

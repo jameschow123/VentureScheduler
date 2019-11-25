@@ -23,11 +23,11 @@ namespace Scheduler.Models
         [Required(ErrorMessage = "Order date is required!")]
         [Display(Name = "Order Date")]
         [DataType(DataType.Date)]
-        public DateTime orderDate { get; set; }
-        [Display(Name = "Ship Date")]
+        public DateTime lastMaterialDate { get; set; }
+        [Display(Name = "Last material in Date")]
         [DataType(DataType.Date)]
         [Required(ErrorMessage = "Ship Date is required!")]
-        [GreaterThan("orderDate")]
+        [GreaterThan("lastMaterialDate")]
         public DateTime shipDate { get; set; }
         [Display(Name = "Quantity")]
         [Required(ErrorMessage = "Quantity is required!")]
@@ -39,9 +39,9 @@ namespace Scheduler.Models
         {
             List<ValidationResult> res = new List<ValidationResult>();
            
-            if (orderDate > shipDate)
+            if (lastMaterialDate > shipDate)
             {
-                ValidationResult mss = new ValidationResult("orderdate must be before shipdate");
+                ValidationResult mss = new ValidationResult("last Material Date must be before shipdate");
                 res.Add(mss);
 
             }
