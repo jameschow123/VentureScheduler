@@ -71,7 +71,7 @@ namespace Scheduler.Controllers
             return View();
         }
 
-
+         
         public ActionResult deletePart(int id)
         {
 
