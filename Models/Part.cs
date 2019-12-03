@@ -8,7 +8,7 @@ namespace Scheduler.Models
 {
     public class Part
     {
-
+        
         public int partId { get; set; }
         [Display(Name = "Part Name")]
         [Required(ErrorMessage = "Part Name is required!")]
@@ -18,6 +18,9 @@ namespace Scheduler.Models
         [Required(ErrorMessage = "Quantity is required!")]
         [Range(1, 2, ErrorMessage = "Please enter a valid side! enter 2 for both sides.")]
         public int side { get; set; }
+
+
+
 
     }
 }
