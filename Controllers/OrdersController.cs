@@ -18,8 +18,8 @@ namespace Scheduler.Controllers
 
 
         // GET: Orders
-       // [Route("Orders/released/{year}/{month:regex(\\d{4}):range(1,12)}")]
-        public ActionResult ByReleaseDate(int year,int month)
+        // [Route("Orders/released/{year}/{month:regex(\\d{4}):range(1,12)}")]
+        public ActionResult ByReleaseDate(int year, int month)
         {
             return Content(year + "/" + month);
         }
@@ -46,8 +46,8 @@ namespace Scheduler.Controllers
 
             OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
 
-            OrderPartViewModel.parts = parts;    
-          
+            OrderPartViewModel.parts = parts;
+
 
             return View(OrderPartViewModel);
         }
@@ -81,7 +81,7 @@ namespace Scheduler.Controllers
         // POST: Orders
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult newOrder(Order order,int selectedPart)
+        public ActionResult newOrder(Order order, int selectedPart)
         {
 
             int created = 0;
@@ -89,14 +89,14 @@ namespace Scheduler.Controllers
             {
                 try
                 {
-                    
-                     created = OrderProcessor.CreateOrder(
-                 order.orderId,
-                  selectedPart,
-                  order.projectName,
-                   order.lastMaterialDate,
-                 order.shipDate,
-                  order.quantity);
+
+                    created = OrderProcessor.CreateOrder(
+                   order.orderId,
+                    selectedPart,
+                    order.projectName,
+                     order.lastMaterialDate,
+                   order.shipDate,
+                    order.quantity);
 
 
 
@@ -113,9 +113,9 @@ namespace Scheduler.Controllers
 
             }
 
-                ModelState.AddModelError("", "Error");
-                return View();
-            }
+            ModelState.AddModelError("", "Error");
+            return View();
+        }
 
 
         public ActionResult deleteOrder(int id)
@@ -147,14 +147,14 @@ namespace Scheduler.Controllers
                 order.Add(new Order
                 {
                     orderId = row.orderId,
-                   
+
                 });
             }
 
 
             // Checks thru the list of parts to see if parts exist in database
             bool isValid = !order.ToList().Exists(p => p.orderId.Equals(orderId));
-           
+
 
 
             return Json(isValid);
@@ -275,7 +275,7 @@ namespace Scheduler.Controllers
 
 
                     // ViewBag.ListProducts = listOrder;
-                  //  DataLibrary.Models.orderModel orderModel = new orderModel();
+                    //  DataLibrary.Models.orderModel orderModel = new orderModel();
 
 
 
@@ -285,20 +285,20 @@ namespace Scheduler.Controllers
                 }
                 else
                 {
-                   // ViewBag.Error = "File type is incorrect";
+                    // ViewBag.Error = "File type is incorrect";
                     TempData["ErrorCSV"] = "File type is incorrect";
 
                     return RedirectToAction("ViewOrders");
 
                 }
             }
-           
-           
-        }
-    
 
-        
-        
+
+        }
+
+
+
+
 
     }
 }
