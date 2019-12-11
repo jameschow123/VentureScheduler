@@ -29,9 +29,41 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Order", "newOrder", "Orders")</li>
-                    <li>@Html.ActionLink("View Orders", "ViewOrders", "Orders")</li>
-                    <li>@Html.ActionLink("View Part", "ViewParts", "Part")</li>
+                    <li class="dropdown">
+                        @Html.ActionLink("Order", "ViewOrders", "Orders")
+                        <ul class="dropdown-menu">
+
+                            <li>@Html.ActionLink("Create Order", "newOrder", "Orders")</li>
+                            <li>@Html.ActionLink("View/Edit Orders", "ViewOrders", "Orders")</li>
+
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        @Html.ActionLink("Part", "ViewParts", "Part")
+                        <ul class="dropdown-menu">
+
+                            <li>
+                                @Html.ActionLink("Create Part", "newPart", "Part")
+                            </li>
+                            <li>
+                                @Html.ActionLink("View/Edit Parts", "ViewParts", "Part")
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        @Html.ActionLink("Schedule", "ViewSchedules", "Schedule")
+                        <ul class="dropdown-menu">
+
+                      
+                            <li>
+                                @Html.ActionLink("View/Edit Schedule", "ViewSchedules", "Schedule")
+                            </li>
+
+                        </ul>
+                    </li>
+
 
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -56,10 +88,19 @@
         var message = TempData["UserMessage"];
         <div class="alert">
             <strong>TempData["UserMessage"]</strong>
-           
+
         </div>
     }
 
+    <script>
+        //this line means we won't do anything until the page is ready for it
+        $(document).ready(function () {
+            $(".dropdown").hover(function () {
+                //toggle the open class (on/off)
+                $(this).toggleClass("open");
+            });
+        })
+    </script>
 
 
 
