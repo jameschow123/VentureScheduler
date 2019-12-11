@@ -13,7 +13,6 @@ namespace Scheduler.ViewModel
         public Order order { get; set; }
 
 
-        [Required]
         [Display(Name = "Parts")]
         public int selectedPart { get; set; }
         public List<Part> parts { get; set; }

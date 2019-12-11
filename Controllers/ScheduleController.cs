@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-
 namespace Scheduler.Controllers
 {
     public class ScheduleController : Controller
@@ -46,7 +45,7 @@ namespace Scheduler.Controllers
 
         // compute time needed
 
-        public void scheduleOrder(Order order)
+        public static int scheduleOrder(Order order)
         {
 
 
@@ -119,14 +118,22 @@ namespace Scheduler.Controllers
 
 
 
-            schedule.smtStart = schedule.earlistStartDate;
+            schedule.smtStart = schedule.plannedStartDate;
             schedule.smtEnd = schedule.smtStart.AddSeconds(totalRunningTime);
+
+            //Add to DB here.
+
+
+            int result = ScheduleProcessor.CreateSchedule(schedule.orderId, schedule.partId, schedule.lineId, schedule.backendId, schedule.BEDate, schedule.earlistStartDate, schedule.plannedStartDate, schedule.latestStartDate, schedule.smtStart, schedule.smtEnd);
+
+
+            return result;
 
 
         }
 
 
-        public int getBEId(int partId)
+        public static int getBEId(int partId)
         {
             var backendProcessData = BackendProcessor.getBackendId(partId);
             int BEId = -1;
@@ -142,40 +149,52 @@ namespace Scheduler.Controllers
         }
 
 
-        public DateTime calculateBEDate(int partId, int quantity, DateTime shipDate)
+        public static DateTime calculateBEDate(int partId, int quantity, DateTime shipDate)
         {
-            // depending  on partId selected , get backend time
-            var backendProcessData = BackendProcessor.getBackendProcessByID(partId);
 
-            Backend BE = new Backend();
+            try
+            {
+                // depending  on partId selected , get backend time
+                var backendProcessData = BackendProcessor.getBackendProcessByID(partId);
 
-            foreach (var row in backendProcessData)
+                Backend BE = new Backend();
+
+                foreach (var row in backendProcessData)
+                {
+
+                    BE.BEID = row.backendId;
+                    BE.partId = row.partId;
+                    BE.processName = row.processName;
+                    BE.duration = row.duration;
+
+                }
+
+
+                // Calculate BE Time here
+                // calculate BE time needed (quantity * BE.duration) in sec
+                int BackendTotalDuration = quantity * BE.duration;
+
+                // calculate BEdate (order.shipdate - backednTime needed)
+                DateTime BEdate = shipDate.AddSeconds(-BackendTotalDuration);
+
+
+                return BEdate;
+            }
+            catch (Exception ex)
             {
 
-                BE.BEID = row.backendId;
-                BE.partId = row.partId;
-                BE.processName = row.processName;
-                BE.duration = row.duration;
-
+                Console.WriteLine(ex);
+                return shipDate;
             }
 
 
-            // Calculate BE Time here
-            // calculate BE time needed (quantity * BE.duration) in sec
-            int BackendTotalDuration = quantity * BE.duration;
-
-            // calculate BEdate (order.shipdate - backednTime needed)
-            DateTime BEdate = shipDate.AddSeconds(-BackendTotalDuration);
-
-
-            return BEdate;
 
         }
 
 
         // Method retrieves the next available line
         //returns lineId, plannedStartDate
-        public List<Schedule> GetAvailableLines()
+        public static List<Schedule> GetAvailableLines()
         {
 
 
@@ -209,7 +228,7 @@ namespace Scheduler.Controllers
 
         }
 
-        public int calculateTotalSMTTIme(int timePerPart, int quantity)
+        public static int calculateTotalSMTTIme(int timePerPart, int quantity)
         {
             int totalProcessingTime = timePerPart * quantity;
 

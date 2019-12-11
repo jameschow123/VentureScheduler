@@ -85,14 +85,16 @@ namespace Scheduler.Controllers
         {
 
             int created = 0;
+            order.partId = selectedPart;
             if (ModelState.IsValid)
             {
+
                 try
                 {
 
                     created = OrderProcessor.CreateOrder(
                    order.orderId,
-                    selectedPart,
+                    order.partId,
                     order.projectName,
                      order.lastMaterialDate,
                    order.shipDate,
@@ -101,20 +103,60 @@ namespace Scheduler.Controllers
 
 
 
-                    TempData["newOrderResult"] = created;
+                    //TempData["newOrderResult"] = created;
+
+
+                    if (created == 1)
+                    {
+                        // Schedule object
+                        int result = ScheduleController.scheduleOrder(order);
+                        if (result == 1)
+                            TempData["newOrderResult"] = created;
+                        else
+                        {
+                            //rollback and remove order
+                            OrderProcessor.DeleteOrder(order.orderId);
+                        }
+
+
+                    }
+
+
+
                     return RedirectToAction("ViewOrders");
                 }
                 catch (Exception ex)
                 {
-                    TempData["newOrderResult"] = created;
-                    return RedirectToAction("ViewOrders");
-                    //return View(ex.Message);
+                    //  TempData["newOrderResult"] = created;
+                    //return RedirectToAction("ViewOrders");
+                    return View(ex.Message);
                 }
 
             }
 
             ModelState.AddModelError("", "Error");
-            return View();
+            List<Part> parts = new List<Part>();
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+
+                });
+            }
+
+
+
+            OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
+
+            OrderPartViewModel.parts = parts;
+
+
+            return View(OrderPartViewModel);
         }
 
 
