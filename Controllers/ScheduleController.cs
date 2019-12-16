@@ -2,6 +2,7 @@
 using Scheduler.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Mvc;
 
 namespace Scheduler.Controllers
@@ -64,7 +65,7 @@ namespace Scheduler.Controllers
             //1. check and get the line which is the "most free"
             int lineId = -1;
             int Index = 0;
-
+            /*
             List<Schedule> NextfreeLine = new List<Schedule>();
             NextfreeLine = GetAvailableLines(); // returns schedule object with next available lineId and smtEnd in order of most available line first
 
@@ -102,14 +103,59 @@ namespace Scheduler.Controllers
 
 
             }
+            */
 
-            // IF manufacturingTimeData cant be found on any line. return error
-            if (partManufacturingTime == null || partManufacturingTime.manufacturingTIme.Equals(null))
+            //Calculate BE Time here.
+
+
+            var data = ScheduleProcessor.LoadAvailableLineList(order.partId);
+
+            if (data == null | data.Count.Equals(0))
             {
-                //display error theres not such line/part combo.
-                string errorMsg = "Manufacturing Time Data does not exist for this part. Enter part/line data in Line page or change part.";
+
+                // check if partId has any ManufacturingTime info
+                var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
+
+
+                if (getLineData == null | getLineData.Count.Equals(0))
+                {
+                    // no line information for that part
+                    return -1;
+                }
+
+                lineId = getLineData[0].lineId;
+                schedule.plannedStartDate = DateTime.Now;
+
+            }
+            else
+            {
+                lineId = data[0].lineId;
+                schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+
+
             }
 
+
+
+            var manufacturingTimeData = manufacturingTimeProcessor.GetManufacturingTime(lineId, order.partId);
+
+            ManufacturingTime partManufacturingTime = new ManufacturingTime();
+
+            foreach (var row in manufacturingTimeData)
+            {
+                partManufacturingTime.lineId = row.lineId;
+                partManufacturingTime.PartId = row.partId;
+                partManufacturingTime.manufacturingTIme = row.manufacturingTime;
+
+            }
+            // IF manufacturingTimeData cant be found on any line. return error
+            if (manufacturingTimeData == null || manufacturingTimeData[0].Equals(null))
+            {
+                //display error theres not such line/part combo.
+                //string errorMsg = "Manufacturing Time Data does not exist for this part. Enter part/line data in Line page or change part.";
+
+                return 0;
+            }
 
             //calcualte time for SMT process here
             int totalRunningTime = calculateTotalSMTTIme(partManufacturingTime.manufacturingTIme, order.quantity);
@@ -193,7 +239,7 @@ namespace Scheduler.Controllers
 
 
         // Method retrieves the next available line
-        //returns lineId, plannedStartDate
+        //returns lineId, SMTend
         public static List<Schedule> GetAvailableLines()
         {
 
@@ -227,6 +273,75 @@ namespace Scheduler.Controllers
 
 
         }
+
+
+
+
+        /// <summary>
+        /// calls LoadAvailableLineList to get list of lines thats processes input part in ascending order
+        /// </summary>
+        /// <param name="partId"></param>
+        /// <returns>List<Schedule></returns>
+        public static List<Schedule> LoadAvailableLineList(int partId)
+        {
+
+
+            var data = ScheduleProcessor.LoadAvailableLineList(partId);
+
+            List<Schedule> schedule = new List<Schedule>();
+
+            //  if there is no data (no orders schedule), assign line 1
+
+            if (data == null || data.Count.Equals(0))
+            {
+                //check which line process parts
+                var manufacturingData = manufacturingTimeProcessor.GetManufacturingTimeByPart(partId);
+                List<ManufacturingTime> MT = new List<ManufacturingTime>();
+
+                if (manufacturingData == null || manufacturingData.Count.Equals(0))
+                {
+                    // No line process this part, return error to user
+
+                    return schedule;
+                }
+                else
+                {
+                    // set first schedule here, datetime as today
+
+
+                    schedule.Add(new Schedule
+                    {
+                        lineId = manufacturingData[0].lineId,
+                        smtEnd = DateTime.Now
+                    }
+
+                    );
+                    return schedule;
+                }
+
+            }
+
+
+
+
+            else
+            {
+                foreach (var row in data)
+                {
+                    schedule.Add(new Schedule
+                    {
+                        lineId = row.lineId,
+                        smtEnd = row.SMTEnd
+
+                    });
+                }
+                return schedule;
+            }
+
+
+
+        }
+
 
         public static int calculateTotalSMTTIme(int timePerPart, int quantity)
         {

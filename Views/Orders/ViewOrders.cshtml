@@ -70,7 +70,7 @@
                 @Html.DisplayFor(modelItem => item.quantity)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.orderId }) |
+                @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
                 @Html.ActionLink("Details", "Details", new { id = item.orderId }) |
                 @Html.ActionLink("Delete", "Delete", new { id = item.orderId })
             </td>
@@ -79,7 +79,6 @@
 
 
 </table>
-
 
 
 
@@ -95,6 +94,10 @@
     <script type="text/javascript">
         if (@TempData["newOrderResult"] == 1)
             swal("Success!", "New order is added and scheduled!", "success");
+             else if (@TempData["newOrderResult"] == -1)
+            swal("Error!", "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.", "error");
+              else if (@TempData["newOrderResult"] == 0)
+                    swal("Error!",  "unknown error has occurred during scheduling , please contact administrator.", "error");
         else if (@TempData["newOrderResult"] == 2)
                     swal("Success!", "Order is deleted!", "success");
         else

@@ -6,7 +6,18 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="/scripts/moment.min.js"></script>
+    <script src="/scripts/bootstrap.min.js"></script>
+    <script src="~/scripts/bootstrap-datetimepicker.js"></script>
+    <script src="~/scripts/jquery.validate.date.js"></script>
+    <link href="/Content/bootstrap-datetimepicker.css" />
 
 
 </head>
@@ -56,7 +67,7 @@
                         @Html.ActionLink("Schedule", "ViewSchedules", "Schedule")
                         <ul class="dropdown-menu">
 
-                      
+
                             <li>
                                 @Html.ActionLink("View/Edit Schedule", "ViewSchedules", "Schedule")
                             </li>
@@ -78,7 +89,6 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 

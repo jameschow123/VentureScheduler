@@ -17,12 +17,7 @@ namespace Scheduler.Controllers
     {
 
 
-        // GET: Orders
-        // [Route("Orders/released/{year}/{month:regex(\\d{4}):range(1,12)}")]
-        public ActionResult ByReleaseDate(int year, int month)
-        {
-            return Content(year + "/" + month);
-        }
+
 
         public ActionResult newOrder()
         {
@@ -42,9 +37,50 @@ namespace Scheduler.Controllers
                 });
             }
 
+            OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
 
+            OrderPartViewModel.parts = parts;
+
+
+            return View(OrderPartViewModel);
+        }
+
+        public ActionResult editOrder(int id)
+        {
+            var orderData = OrderProcessor.LoadOrder(id);
+
+            Order order = new Order();
+
+            foreach (var row in orderData)
+            {
+
+                order.orderId = row.orderId;
+                order.partId = row.partId;
+                order.projectName = row.projectName;
+                order.lastMaterialDate = row.lastMaterialDate;
+                order.shipDate = row.shipDate;
+                order.quantity = row.quantity;
+
+            }
+
+            List<Part> parts = new List<Part>();
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+
+                });
+            }
 
             OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
+
+            OrderPartViewModel.order = order;
+            OrderPartViewModel.selectedPart = order.partId;
 
             OrderPartViewModel.parts = parts;
 
@@ -84,14 +120,18 @@ namespace Scheduler.Controllers
         public ActionResult newOrder(Order order, int selectedPart)
         {
 
-            int created = 0;
+            // int created = 0;
+
+
+
+
             order.partId = selectedPart;
             if (ModelState.IsValid)
             {
 
                 try
                 {
-
+                    /*
                     created = OrderProcessor.CreateOrder(
                    order.orderId,
                     order.partId,
@@ -104,18 +144,25 @@ namespace Scheduler.Controllers
 
 
                     //TempData["newOrderResult"] = created;
-
+                    */
+                    int created = 1;
 
                     if (created == 1)
                     {
                         // Schedule object
                         int result = ScheduleController.scheduleOrder(order);
                         if (result == 1)
-                            TempData["newOrderResult"] = created;
-                        else
+                            TempData["newOrderResult"] = 1;
+                        else if (result == -1)
                         {
                             //rollback and remove order
                             OrderProcessor.DeleteOrder(order.orderId);
+                            TempData["newOrderResult"] = -1;
+                        }
+                        else if (result == 0)
+                        {
+
+                            TempData["newOrderResult"] = 0;
                         }
 
 
@@ -307,8 +354,8 @@ namespace Scheduler.Controllers
                 o.orderId,
                  o.partId,
                  o.projectName,
-                  o.lastMaterialDate,
-                o.shipDate,
+                   o.lastMaterialDate,
+                 o.shipDate,
                  o.quantity);
                         //check if part exist, if part does not exist discard list
 

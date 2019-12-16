@@ -12,7 +12,7 @@ namespace Scheduler.Models
         [Required(ErrorMessage = "Order ID is required!")]
         [Range(00000000, 99999999, ErrorMessage = "Please enter a valid orderID")]
         public int orderId { get; set; }
-        [Display(Name = "Part ID")]
+        [Display(Name = "Product ID")]
         [Required(ErrorMessage = "Part ID is required!")]
         [Range(00000000, 99999999, ErrorMessage = "Please enter a valid partID")]
         public int partId { get; set; }
