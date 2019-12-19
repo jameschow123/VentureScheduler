@@ -25,21 +25,21 @@ namespace Scheduler.Models
         [Range(00000000, 99999999, ErrorMessage = "Please enter a valid BackendID")]
         public int backendId { get; set; }
         [Display(Name = "Backend Required Date")]
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime BEDate { get; set; }
         [Display(Name = "earliest start Date")]
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime earlistStartDate { get; set; }
         [Display(Name = "Planned start Date")]
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime plannedStartDate { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [Display(Name = "latest start date")]
         public DateTime latestStartDate { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [Display(Name = "SMT start day")]
         public DateTime smtStart { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         [Display(Name = "SMT end day")]
         public DateTime smtEnd { get; set; }
 

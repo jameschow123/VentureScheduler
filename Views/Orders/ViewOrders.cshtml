@@ -8,22 +8,18 @@
 <h2>View Orders</h2>
 
 <p>
-    @Html.ActionLink("Create New", "newOrder")
+    @Html.ActionLink("Create New order", "newOrder")
 
 </p>
 
-@using (Html.BeginForm("importOrderCSV", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    //@Html.Raw(ViewBag.Error)
-    if (TempData["ErrorCSV"] != null)
-    {
-        <p class="alert alert-danger" id="errorMessage">@TempData["ErrorCSV"]</p>
-    }
-    <span> Excel File</span>
-    <input type="file" name="excelfile" />
-    <br />
-    <input type="submit" value="importOrderCSV">
-}
+<p>
+    @Html.ActionLink("Import Orders (via Excel)", "importOrderCSV")
+
+</p>
+
+
+ 
+
 
 <table class="table">
     <tr>

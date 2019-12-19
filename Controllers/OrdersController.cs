@@ -120,7 +120,7 @@ namespace Scheduler.Controllers
         public ActionResult newOrder(Order order, int selectedPart)
         {
 
-            // int created = 0;
+            int created = 0;
 
 
 
@@ -131,7 +131,7 @@ namespace Scheduler.Controllers
 
                 try
                 {
-                    /*
+
                     created = OrderProcessor.CreateOrder(
                    order.orderId,
                     order.partId,
@@ -144,8 +144,7 @@ namespace Scheduler.Controllers
 
 
                     //TempData["newOrderResult"] = created;
-                    */
-                    int created = 1;
+
 
                     if (created == 1)
                     {
@@ -207,6 +206,78 @@ namespace Scheduler.Controllers
         }
 
 
+        public int newOrderCSV(Order order)
+        {
+
+            int created = 0;
+            int result = 0;
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    created = OrderProcessor.CreateOrder(
+                   order.orderId,
+                    order.partId,
+                    order.projectName,
+                     order.lastMaterialDate,
+                   order.shipDate,
+                    order.quantity);
+
+
+
+
+                    //TempData["newOrderResult"] = created;
+
+
+                    if (created == 1)
+                    {
+                        // Schedule object
+                        result = ScheduleController.scheduleOrder(order);
+                        if (result == 1)
+                            TempData["newOrderResult"] = "New order is added and scheduled";
+                        else if (result == -1)
+                        {
+                            //rollback and remove order
+                            OrderProcessor.DeleteOrder(order.orderId);
+                            TempData["newOrderResult"] = "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.";
+                        }
+                        else if (result == 0)
+                        {
+
+                            TempData["newOrderResult"] = "unknown error has occurred during scheduling , please contact administrator.";
+                        }
+
+
+                    }
+
+
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    //  TempData["newOrderResult"] = created;
+                    //return RedirectToAction("ViewOrders");
+                    return 0;
+                }
+
+            }
+
+
+
+            TempData["newOrderResult"] = ModelState.Values;
+
+
+
+            return -1;
+        }
+
+
+
+
+
         public ActionResult deleteOrder(int id)
         {
             if (ModelState.IsValid)
@@ -249,6 +320,15 @@ namespace Scheduler.Controllers
             return Json(isValid);
         }
 
+
+
+        public ActionResult importOrderCSV()
+        {
+            TempData["importOrderCSV"] = 0;
+
+            List<Order> order = new List<Order>();
+            return View(order);
+        }
 
 
         [HttpPost]
@@ -306,33 +386,46 @@ namespace Scheduler.Controllers
                         });
                     }
 
+                    //create List of of orders that have orderID exist and partId does not exist. Return list of objects to user 
+                    List<Order> ErrorListOrder = new List<Order>();
+
+
                     List<Order> listOrder = new List<Order>();
                     for (int row = 3; row <= range.Rows.Count; row++)
                     {
-                        Order o = new Order();
-                        o.orderId = int.Parse(((Excel.Range)range.Cells[row, 1]).Text);
+                        Order order = new Order();
+                        order.orderId = int.Parse(((Excel.Range)range.Cells[row, 1]).Text);
+                        order.partId = int.Parse(((Excel.Range)range.Cells[row, 2]).Text);
+
+
 
                         // check if orderID already exist. if exist skip
                         bool continueCond = false;
                         for (int i = 0; i < existingOrderList.Count; i++)
                         {
-                            if (o.orderId.Equals(existingOrderList[i].orderId))
+                            if (order.orderId.Equals(existingOrderList[i].orderId))
                             {
+
+
                                 continueCond = true;
                                 break;
                             }
                         }
                         // OrderID already exist , dont add 
                         if (continueCond == true)
+                        {
+                            order.quantity = 0;
+                            order.projectName = " OrderID already exist in database. Check OrderId or edit existing order in View order page";
+                            ErrorListOrder.Add(order);
                             continue;
+                        }
 
 
-                        o.partId = int.Parse(((Excel.Range)range.Cells[row, 2]).Text);
                         //check if part exist, if part does not exist discard list
                         bool continueCond2 = false;
                         for (int i = 0; i < existingPartList.Count; i++)
                         {
-                            if (o.partId.Equals(existingPartList[i].partId))
+                            if (order.partId.Equals(existingPartList[i].partId))
                             {
                                 continueCond2 = true;
                                 break;
@@ -340,26 +433,54 @@ namespace Scheduler.Controllers
                         }
                         // Part is not found , dont add current order
                         if (continueCond2 == false)
+                        {
+                            order.quantity = 0;
+                            order.projectName = " ProductId does not exist in database. Check partId or add part data to Part Database";
+                            ErrorListOrder.Add(order);
                             continue;
+                        }
 
 
-                        o.projectName = ((Excel.Range)range.Cells[row, 3]).Text;
-                        o.lastMaterialDate = DateTime.Parse(((Excel.Range)range.Cells[row, 4]).Text);
-                        o.shipDate = DateTime.Parse(((Excel.Range)range.Cells[row, 5]).Text);
-                        o.quantity = int.Parse(((Excel.Range)range.Cells[row, 6]).Text);
+                        order.projectName = ((Excel.Range)range.Cells[row, 3]).Text;
+                        order.lastMaterialDate = DateTime.Parse(((Excel.Range)range.Cells[row, 4]).Text);
+                        order.shipDate = DateTime.Parse(((Excel.Range)range.Cells[row, 5]).Text);
+                        order.quantity = int.Parse(((Excel.Range)range.Cells[row, 6]).Text);
+
+
+
 
 
                         //insert into DB
+                        /*
                         int created = OrderProcessor.CreateOrder(
-                o.orderId,
-                 o.partId,
-                 o.projectName,
-                   o.lastMaterialDate,
-                 o.shipDate,
-                 o.quantity);
+                        order.orderId,
+                        order.partId,
+                        order.projectName,
+                        order.lastMaterialDate,
+                        order.shipDate,
+                        order.quantity);
+                        */
+
+
+                        // returns 1 for successfully operation, 0 for unknown error, -1 for Error in manufacturingPart does not exist
+                        int importResult = newOrderCSV(order);
+
+                        if (importResult == -1 || importResult == 0)
+                        {
+                            //rollback and remove order
+                            order.quantity = 0;
+                            order.projectName = TempData["newOrderResult"].ToString();
+                        }
+
+
+
+
+                        ErrorListOrder.Add(order);
+
+                        //order.projectName = "Success!";
                         //check if part exist, if part does not exist discard list
 
-                        listOrder.Add(o);
+                        // listOrder.Add(order);
                     }
 
 
@@ -367,10 +488,12 @@ namespace Scheduler.Controllers
                     //  DataLibrary.Models.orderModel orderModel = new orderModel();
 
 
+                    application.Workbooks.Close();
+                    //  workbook.Close(path);
 
-                    workbook.Close(path);
 
-                    return RedirectToAction("ViewOrders");
+                    TempData["importOrderCSV"] = 1;
+                    return View(ErrorListOrder);
                 }
                 else
                 {

@@ -455,6 +455,7 @@
     <Content Include="Views\Part\newPart.cshtml" />
     <Content Include="Views\Schedule\ViewSchedules.cshtml" />
     <Content Include="Views\Orders\editOrder.cshtml" />
+    <Content Include="Views\Orders\importOrderCSV.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

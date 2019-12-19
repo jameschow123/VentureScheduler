@@ -1,0 +1,150 @@
+﻿@model IEnumerable<Scheduler.Models.Order>
+
+@{
+    ViewBag.Title = "importOrderCSV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>CSV Import</h2>
+
+
+
+
+@using (Html.BeginForm("importOrderCSV", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    //@Html.Raw(ViewBag.Error)
+    if (TempData["ErrorCSV"] != null)
+    {
+        <p class="alert alert-danger" id="errorMessage">@TempData["ErrorCSV"]</p>
+    }
+    <span> Excel File</span>
+    <input type="file" name="excelfile" />
+    <br />
+    <input type="submit" value="Import CSV">
+}
+
+
+<br />
+
+<div id="result">
+
+    @if (!Model.Equals(0))
+    {
+
+        <h2>Error Results:</h2>
+
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.orderId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.partId)
+                </th>
+                <th>
+                    @Html.DisplayName("Message")
+                </th>
+
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                if (item.quantity == 0 || item.quantity == -1)
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayFor(modelItem => item.orderId)
+                        </th>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.partId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.projectName)
+                        </td>
+
+
+                    </tr>
+                }
+            }
+
+        </table>
+
+        <br />
+
+
+        <h2>Successfully added</h2>
+
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.orderId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.partId)
+                </th>
+                <th>
+                    @Html.DisplayName("Message")
+                </th>
+
+                <th></th>
+            </tr>
+
+            @foreach (var item2 in Model)
+            {
+
+                if (item2.quantity != 0)
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayFor(modelItem => item2.orderId)
+                        </th>
+                        <td>
+                            @Html.DisplayFor(modelItem => item2.partId)
+                        </td>
+                        <td>
+                            @Html.DisplayName("Success!")
+                        </td>
+
+
+                    </tr>
+                }
+            }
+
+
+        </table>
+
+    }
+
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        CheckAvailability();
+
+
+
+
+
+
+    });
+
+
+
+       function CheckAvailability() {
+
+           if (@TempData["importOrderCSV"] == 1)
+                 $("#result").show();
+
+           else if (@TempData["importOrderCSV"] == 0)
+               $("#result").hide();
+
+
+
+            };
+
+
+</script>

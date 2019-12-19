@@ -44,7 +44,8 @@
                         @Html.ActionLink("Order", "ViewOrders", "Orders")
                         <ul class="dropdown-menu">
 
-                            <li>@Html.ActionLink("Create Order", "newOrder", "Orders")</li>
+                            <li>@Html.ActionLink("Create New order", "newOrder", "Orders")</li>
+                            <li>@Html.ActionLink("Import Orders (via Excel)", "importOrderCSV", "Orders")</li>
                             <li>@Html.ActionLink("View/Edit Orders", "ViewOrders", "Orders")</li>
 
                         </ul>
