@@ -1,0 +1,116 @@
+﻿@model Scheduler.ViewModel.PartLineManufacturingViewModel
+
+@{
+    ViewBag.Title = "newManufacturingTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Manufacturing Time</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(x => Model.selectedLine, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.selectedLine, new SelectList(Model.lines, "lineId", "lineName"), "select", htmlAttributes: new { @id = "lineId", @name = "lineId", @class = "form-control" })
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => Model.selectedPart, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.selectedPart, new SelectList(Model.parts, "partId", "partName"), "select", htmlAttributes: new { @id = "partId", @name = "partId", @class = "form-control" })
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.manufacturingTIme, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.manufacturingTIme, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.manufacturingTIme, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input id="submit" type="submit" value="Create" class="btn btn-default" />
+                <span id="message"></span>
+
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+        $("#submit").hide();
+        CheckAvailability()
+
+
+
+
+    });
+
+
+
+     var timer = null;
+    $('.form-control').change(function () {
+        clearTimeout(timer);
+        timer = setTimeout(CheckAvailability, 1000)
+
+    });
+
+
+
+    function CheckAvailability() {
+        var lineId = $("#lineId").val();
+        var partId = $("#partId").val();
+        $.ajax({
+            type: "POST",
+            url: "/Manufacturing/CheckManufacturingTimeExist",
+            data: '{lineId: "' + lineId + '",partId: "' + partId + '" }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var message = $("#message");
+                if (response) {
+                    //orderId is available.
+                    message.css("color", "green");
+                    message.html("Manufacturing data is available");
+                    $("#submit").show();
+                }
+                else {
+                    //orderId already exist
+                    message.css("color", "red");
+                    message.html("Manufacturing Time already exist!");
+                    $("#submit").hide();
+
+                }
+            }
+        });
+    };
+
+    function ClearMessage() {
+        $("#message").html("");
+    };
+
+
+
+
+
+</script>

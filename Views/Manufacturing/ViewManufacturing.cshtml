@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Scheduler.ViewModel.PartLineManufacturingViewModel>
+
+@{
+    ViewBag.Title = "ViewManufacturing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>View Manufacturing Time</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.lineName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.partName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.manufacturingTIme)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.lineName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.partName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.manufacturingTIme)
+            </td>
+
+
+            <td>
+                @Html.ActionLink("Edit", "updateManufacturingTime", new { selectedLine = item.selectedLine, selectedPart = item.selectedPart, manufacturingTIme = item.manufacturingTIme }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "deleteManufacturingTime", new { lineId = item.selectedLine, partId = item.selectedPart })
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+@if (TempData["ManufacturingResult"] != null)
+{
+    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+        if (@TempData["ManufacturingResult"] == 1)
+            swal("Success!", "New Manufacturing time is added!", "success");
+              else if (@TempData["ManufacturingResult"] == 0)
+                    swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
+        else if (@TempData["ManufacturingResult"] == 2)
+            swal("Success!", "Manufacturing time is deleted!", "success");
+             else if (@TempData["ManufacturingResult"] == 3)
+                    swal("Success!", "Manufacturing time is Updated!", "success");
+        else
+            swal("Error!", "An error has occurred!", "error");
+
+
+
+    </script>
+}

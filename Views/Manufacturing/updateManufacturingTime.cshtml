@@ -1,0 +1,52 @@
+﻿@model Scheduler.ViewModel.PartLineManufacturingViewModel
+
+@{
+    ViewBag.Title = "updateManufacturingTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Manufacturing Time</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.selectedLine, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.selectedLine, new SelectList(Model.lines, "lineId", "lineName"), "select", htmlAttributes: new { @id = "lineId", @name = "lineId", @class = "form-control", disabled = "disabled", @readonly = "readonly"  })  
+                @Html.ValidationMessageFor(model => model.selectedLine, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.selectedPart, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.selectedPart, new SelectList(Model.parts, "partId", "partName"), "select", htmlAttributes: new { @id = "partId", @name = "partId", @class = "form-control", disabled = "disabled", @readonly = "readonly"   })
+                @Html.ValidationMessageFor(model => model.selectedPart, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.manufacturingTIme, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.manufacturingTIme, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.manufacturingTIme, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

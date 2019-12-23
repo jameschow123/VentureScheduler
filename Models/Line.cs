@@ -9,6 +9,6 @@ namespace Scheduler.Models
     {
 
         public int lineId { get; set; }
-        public int lineName { get; set; }
+        public String lineName { get; set; }
     }
 }

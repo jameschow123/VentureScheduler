@@ -65,6 +65,19 @@
                         </ul>
                     </li>
                     <li class="dropdown">
+                        @Html.ActionLink("Manufacturing", "ViewManufacturing", "Manufacturing")
+                        <ul class="dropdown-menu">
+
+                            <li>
+                                @Html.ActionLink("Create Manufacturing Time", "newManufacturingTime", "Manufacturing")
+                            </li>
+                            <li>
+                                @Html.ActionLink("View/Edit Manufacturing Time", "ViewManufacturing", "Manufacturing")
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="dropdown">
                         @Html.ActionLink("Schedule", "ViewSchedules", "Schedule")
                         <ul class="dropdown-menu">
 
@@ -75,6 +88,7 @@
 
                         </ul>
                     </li>
+
 
 
                 </ul>

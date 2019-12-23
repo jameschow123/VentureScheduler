@@ -132,7 +132,7 @@ namespace Scheduler.Controllers
             else
             {
 
-                //check if SMTend date is less then current date 
+                //check if SMTend date is more then current date 
                 if (data[0].SMTEnd <= DateTime.Now)
                 {
                     // SMTEnd is lesser then today , set planneStartDate as today + 1 hr
@@ -144,11 +144,8 @@ namespace Scheduler.Controllers
 
                 schedule.lineId = data[0].lineId;
 
-                // Planned startdate = min(earliestStartDate OR SMTEND)  
-
-                if (data[0].SMTEnd.AddHours(1) > schedule.earlistStartDate)
-
-                    schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+                // Planned startdate = earliest start date or SMendDate. 
+                schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
 
             }
 
@@ -389,7 +386,6 @@ namespace Scheduler.Controllers
             return totalProcessingTime;
         }
 
-
         public static DateTime CompareDatesNReturnLater(DateTime time1, DateTime time2)
         {
             if (time1 > time2)
@@ -397,7 +393,6 @@ namespace Scheduler.Controllers
             else
                 return time2;
         }
-
 
     }
 }
