@@ -207,7 +207,7 @@ namespace Scheduler.Controllers
             DateTime BEdate = calculateBEDate(order.partId, order.quantity, order.shipDate);
             schedule.BEDate = BEdate;
             schedule.backendId = getBEId(order.partId);
-            schedule.earlistStartDate = order.lastMaterialDate.AddSeconds(1);
+            schedule.earlistStartDate = order.lastMaterialDate.AddDays(1);
 
             // calculate Lasteststartdate. BEdate - time needed for production here 
             //1. check and get the line which is the "most free"
