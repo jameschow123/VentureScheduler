@@ -5,82 +5,119 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>View Schedules</h2>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#tblLocations").sortable({
+            items: 'tr:not(tr:first-child)',
+            cursor: 'pointer',
+            axis: 'y',
+            dropOnEmpty: false,
+            start: function (e, ui) {
+                ui.item.addClass("selected");
+            },
+            stop: function (e, ui) {
+                ui.item.removeClass("selected");
+            },
+            receive: function (e, ui) {
+                $(this).find("tbody").append(ui.item);
+            }
+        });
+    });
+</script>
 
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.orderId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.partId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.lineId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.backendId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BEDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.earlistStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.plannedStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.latestStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.smtStart)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.smtEnd)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm("ViewSchedules", "Schedule", FormMethod.Post))
+{
+    <h2>View Schedules</h2>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.orderId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.partId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.lineId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.backendId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BEDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.earlistStartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.plannedStartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.latestStartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.smtStart)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.smtEnd)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.orderId }) |
-            @Html.ActionLink("Details", "Details", new { id = item.orderId }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.orderId })
-        </td>
-    </tr>
+    <table class="table" id="tblLocations">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.orderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.partId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.lineId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.backendId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BEDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.earlistStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.plannedStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.latestStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.smtStart)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.smtEnd)
+            </th>
+            <th></th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderId)
+                    <input type="hidden" name="orderId" value="@item.orderId" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.partId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.lineId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.backendId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BEDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.earlistStartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.plannedStartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.latestStartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.smtStart)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.smtEnd)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.orderId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.orderId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.orderId })
+                </td>
+            </tr>
+
+
+        }
+
+    </table>
+
+
+
+    <input type="submit" value="Update Preference" />
 }
-
-</table>

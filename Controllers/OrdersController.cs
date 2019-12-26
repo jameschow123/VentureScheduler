@@ -94,11 +94,11 @@ namespace Scheduler.Controllers
 
             var data = OrderProcessor.LoadOrder();
 
-            List<Order> order = new List<Order>();
+            List<Order> orders = new List<Order>();
 
             foreach (var row in data)
             {
-                order.Add(new Order
+                orders.Add(new Order
                 {
                     orderId = row.orderId,
                     partId = row.partId,
@@ -109,9 +109,32 @@ namespace Scheduler.Controllers
                 });
             }
 
-            return View(order);
+            return View(orders);
         }
 
+
+        public static List<Order> getListOrders()
+        {
+
+            var data = OrderProcessor.LoadOrder();
+
+            List<Order> orders = new List<Order>();
+
+            foreach (var row in data)
+            {
+                orders.Add(new Order
+                {
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    projectName = row.projectName,
+                    lastMaterialDate = row.lastMaterialDate,
+                    shipDate = row.shipDate,
+                    quantity = row.quantity
+                });
+            }
+
+            return orders;
+        }
 
 
         // POST: Orders

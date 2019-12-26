@@ -27,20 +27,20 @@ namespace Scheduler.Models
         [Display(Name = "Backend Required Date")]
         [DataType(DataType.DateTime)]
         public DateTime BEDate { get; set; }
-        [Display(Name = "earliest start Date")]
+        [Display(Name = "Earliest Start-date")]
         [DataType(DataType.DateTime)]
         public DateTime earlistStartDate { get; set; }
-        [Display(Name = "Planned start Date")]
+        [Display(Name = "Planned Start-date")]
         [DataType(DataType.DateTime)]
         public DateTime plannedStartDate { get; set; }
         [DataType(DataType.DateTime)]
-        [Display(Name = "latest start date")]
+        [Display(Name = "Latest Start-date")]
         public DateTime latestStartDate { get; set; }
         [DataType(DataType.DateTime)]
-        [Display(Name = "SMT start day")]
+        [Display(Name = "SMT Start-date")]
         public DateTime smtStart { get; set; }
         [DataType(DataType.DateTime)]
-        [Display(Name = "SMT end day")]
+        [Display(Name = "SMT End-date")]
         public DateTime smtEnd { get; set; }
 
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)

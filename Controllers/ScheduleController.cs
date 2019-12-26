@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Mvc;
+using System.Linq;
+
 
 namespace Scheduler.Controllers
 {
@@ -37,13 +39,159 @@ namespace Scheduler.Controllers
             return View(schedule);
         }
 
+
+
+
+        [HttpPost]
+        public ActionResult ViewSchedules(int[] orderId)
+        {
+            List<Schedule> schedule = new List<Schedule>();
+
+            //Get List of orders
+            List<Order> orders = new List<Order>();
+            orders = OrdersController.getListOrders();
+
+            List<Order> sortedListOrders = new List<Order>();
+
+
+            //Iterate through the array from first to last (priority), call scheduleOrder method to handle scheduling
+            for (int i = 0; i < orderId.Length; i++)
+            {
+                Order order = orders.Find(x => x.orderId == orderId[i]);
+
+                //  reScheduleOrder(order);
+
+                sortedListOrders.Add(order);
+
+            }
+
+
+            reScheduleOrder(sortedListOrders);
+
+
+            return RedirectToAction("ViewSchedules");
+        }
+
+        //methods get the 
+        public static int reScheduleOrder(List<Order> orders)
+        {
+
+            int result = -1;
+
+            //1.  get existing scheduling List
+            var ScheduleListData = ScheduleProcessor.LoadSMTStartGroupByLineId();
+
+            List<Schedule> existingScheduleList = new List<Schedule>();
+
+            foreach (var row in ScheduleListData)
+            {
+
+                existingScheduleList.Add(new Schedule
+                {
+
+                    lineId = row.lineId,
+                    smtStart = row.SMTStart,
+
+
+                });
+            }
+
+            // count number of lines , if line is not yet scheduled, set line SmtStart as datetime.now + 1hour
+            var lines = LineProcessor.LoadLine();
+            int NoOfLine = lines.Count();
+
+            if (NoOfLine != existingScheduleList.Count)
+            {
+
+                for (int a = 0; a < NoOfLine; a++)
+                {
+                    bool lineExistInSchedule = false;
+                    Line line = new Line { lineId = lines[a].lineId };
+
+
+                    lineExistInSchedule = existingScheduleList.Exists(x => x.lineId == line.lineId);
+                    if (lineExistInSchedule == true)
+                        continue;
+                    else
+                        existingScheduleList.Add(new Schedule
+                        {
+
+                            lineId = line.lineId,
+                            smtStart = DateTime.Now.AddHours(1)
+
+
+                        });
+
+                }
+
+            }
+
+
+            // iterate though the new ordered list
+            for (int i = 0; i < orders.Count; i++)
+            {
+                Order order = orders[i];
+
+                //2. check which line processes part in order of MT
+                // check if partId has any ManufacturingTime info
+                var MTData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
+
+                // check if there is manufacturing data here, if not continue
+                if (MTData.Count == 0 | MTData == null)
+                    continue;
+
+                int fastestProcessingLine = -1;
+                int totalSMTTime = -1;
+                DateTime smtEndDate = DateTime.MaxValue;
+                //compute processing time for each line
+                for (int j = 0; j < MTData.Count; j++)
+                {
+
+                    ManufacturingTime MT = new ManufacturingTime { lineId = MTData[j].lineId, manufacturingTIme = MTData[j].manufacturingTime };
+
+                    int lineSMTTime = calculateTotalSMTTIme(MT.manufacturingTIme, order.quantity);
+                    // calcuate fastest line to complete order, compare SMTEnddate
+                    //get line SMTStartDate + lineSMTTime
+
+                    Schedule currentLineFirstSchedule = existingScheduleList.Find(x => x.lineId == MT.lineId);
+
+
+                    DateTime linePredictedSMTEnd = currentLineFirstSchedule.smtStart.AddSeconds(lineSMTTime);
+
+                    if (linePredictedSMTEnd < smtEndDate)
+                    {
+                        smtEndDate = linePredictedSMTEnd;
+                        totalSMTTime = lineSMTTime;
+                        fastestProcessingLine = MT.lineId;
+                    }
+
+                }
+
+                DateTime smtStartDate = smtEndDate.AddSeconds(-totalSMTTime);
+
+                // Reschedule the orderId, update lineId, smtStartDate , EndDate 
+                result = ScheduleProcessor.updateSchedule(order.orderId, fastestProcessingLine, smtStartDate, smtEndDate);
+
+
+                // change existingScheduleList smtStart == Order.SmtEnd
+                existingScheduleList.Find(x => x.lineId == fastestProcessingLine).smtStart = smtEndDate;
+
+            }
+
+
+
+
+            return result;
+
+
+        }
+
+
         /* schedule jobs
          * 1. Use backendId to compute total time needed
          * 2. check to ensure which lines have "Least amount of work"
          * 3. check to to collect ManufacturingTime.
         */
-
-
         // compute time needed
 
         public static int scheduleOrder(Order order)
