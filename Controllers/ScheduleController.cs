@@ -197,6 +197,10 @@ namespace Scheduler.Controllers
         public static int scheduleOrder(Order order)
         {
 
+            // check if order exist
+            // check if part exist
+
+
 
             Schedule schedule = new Schedule();
             schedule.orderId = order.orderId;

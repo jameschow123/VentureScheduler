@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Scheduler.ViewModel.PartLineManufacturingViewModel>
+
+@{
+    ViewBag.Title = "importManufacturingCSV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Import Manufacturing CSV</h2>
+
+
+
+@using (Html.BeginForm("importManufacturingCSV", "Manufacturing", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    //@Html.Raw(ViewBag.Error)
+    if (TempData["ErrorCSV"] != null)
+    {
+        <p class="alert alert-danger" id="errorMessage">@TempData["ErrorCSV"]</p>
+    }
+    <span> Excel File</span>
+    <input type="file" name="excelfile" />
+    <br />
+    <input type="submit" value="Import CSV">
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.lineId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PartId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.manufacturingTIme)
+        </th>
+        <th>
+            @Html.DisplayName("Message")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.lineName)
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.partName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.manufacturingTIme)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+    }
+
+</table>

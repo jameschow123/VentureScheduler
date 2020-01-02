@@ -30,6 +30,8 @@ namespace Scheduler.ViewModel
         public string lineName { get; set; }
         public string partName { get; set; }
 
+        public string error { get; set; }
+
 
     }
 }

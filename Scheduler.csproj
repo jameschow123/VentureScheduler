@@ -461,6 +461,7 @@
     <Content Include="Views\Manufacturing\newManufacturingTime.cshtml" />
     <Content Include="Views\Manufacturing\ViewManufacturing.cshtml" />
     <Content Include="Views\Manufacturing\updateManufacturingTime.cshtml" />
+    <Content Include="Views\Manufacturing\importManufacturingCSV.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

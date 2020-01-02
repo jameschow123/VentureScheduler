@@ -19,5 +19,8 @@ namespace Scheduler.Models
         [Required(ErrorMessage = "Manufacturing Time is required!")]
         [Range(1, 10000, ErrorMessage = "Please enter a valid quantity!")]
         public int manufacturingTIme { get; set; }
+
+
+        public string error { get; set; }
     }
 }

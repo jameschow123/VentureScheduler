@@ -155,6 +155,7 @@ namespace Scheduler.Controllers
                 try
                 {
 
+
                     created = OrderProcessor.CreateOrder(
                    order.orderId,
                     order.partId,
@@ -343,7 +344,39 @@ namespace Scheduler.Controllers
             return Json(isValid);
         }
 
+        public bool checkOrderExist(int orderId)
+        {
+            int result = 0;
 
+            List<Order> existingOrderList = new List<Order>();
+            // gets the list of parts
+            var data = OrderProcessor.LoadOrderIds();
+
+            foreach (var row in data)
+            {
+                existingOrderList.Add(new Order
+                {
+                    orderId = row.orderId,
+
+                });
+            }
+
+
+
+            bool continueCond = false;
+            for (int i = 0; i < existingOrderList.Count; i++)
+            {
+                if (orderId.Equals(existingOrderList[i].orderId))
+                {
+
+
+                    continueCond = true;
+                    break;
+                }
+            }
+
+            return continueCond;
+        }
 
         public ActionResult importOrderCSV()
         {

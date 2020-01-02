@@ -55,8 +55,8 @@ namespace Scheduler.Controllers
                        part.side);
 
 
-                    
-                   TempData["newPartResult"] = created;              
+
+                    TempData["newPartResult"] = created;
                     return RedirectToAction("ViewParts");
                 }
                 catch (Exception ex)
@@ -71,7 +71,37 @@ namespace Scheduler.Controllers
             return View();
         }
 
-         
+
+
+        public static int addNewPart(Part part)
+        {
+
+            int created = 0;
+
+            try
+            {
+                created = PartProcessor.CreatePart(
+                   part.partName,
+                   part.side);
+
+                //
+
+
+                return created;
+            }
+            catch (Exception ex)
+            {
+                // TempData["newPartResult"] = "An error has occurred!";
+                return created;
+
+
+            }
+
+
+
+        }
+
+
         public ActionResult deletePart(int id)
         {
 
@@ -102,10 +132,10 @@ namespace Scheduler.Controllers
 
         // method checks if partName has been taken
         [HttpPost]
-        public JsonResult CheckPartName(string partName,int side)
+        public JsonResult CheckPartName(string partName, int side)
         {
-            
-            List <Part> parts = new List<Part>();
+
+            List<Part> parts = new List<Part>();
             // gets the list of parts
             var data = PartProcessor.LoadPart();
 
@@ -119,15 +149,19 @@ namespace Scheduler.Controllers
                 });
             }
 
-            
+
             // Checks thru the list of parts to see if parts exist in database
             bool isValid = !parts.ToList().Exists(p => p.partName.Equals(partName, StringComparison.CurrentCultureIgnoreCase));
             if (isValid == true)
-            isValid = parts.ToList().Exists(p => p.side.Equals(side));
+                isValid = parts.ToList().Exists(p => p.side.Equals(side));
 
 
             return Json(isValid);
         }
+
+
+
+
 
 
 
