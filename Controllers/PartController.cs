@@ -12,6 +12,24 @@ namespace Scheduler.Controllers
     public class PartController : Controller
     {
 
+
+        public static string getPartName(int partId)
+        {
+            string partName = null;
+
+            var partData = PartProcessor.getPartName(partId);
+            foreach (var row in partData)
+            {
+                partName = row.partName;
+
+            }
+
+
+            return partName;
+
+        }
+
+
         public ActionResult ViewParts()
         {
             ViewBag.Message = "Part List";

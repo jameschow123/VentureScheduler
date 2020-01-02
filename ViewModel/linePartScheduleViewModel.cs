@@ -7,8 +7,10 @@ using System.Web;
 
 namespace Scheduler.ViewModel
 {
-    public class PartLineManufacturingViewModel
+    public class linePartScheduleViewModel
     {
+
+        public Schedule schedule { get; set; }
 
 
         [Required(ErrorMessage = "Line is required!")]
@@ -27,12 +29,11 @@ namespace Scheduler.ViewModel
         public int manufacturingTIme { get; set; }
 
 
-
+        [Display(Name = "Line Name")]
         public string lineName { get; set; }
+        [Display(Name = "Part Name")]
         public string partName { get; set; }
 
         public string error { get; set; }
-
-
     }
 }

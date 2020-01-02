@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Mvc;
 using System.Linq;
-
+using Scheduler.ViewModel;
 
 namespace Scheduler.Controllers
 {
@@ -17,27 +17,54 @@ namespace Scheduler.Controllers
 
             var data = ScheduleProcessor.LoadSchedule();
 
-            List<Schedule> schedule = new List<Schedule>();
+            //  List<Schedule> schedule = new List<Schedule>();
+
+
+            List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
+
+
+
 
             foreach (var row in data)
             {
-                schedule.Add(new Schedule
-                {
-                    orderId = row.orderId,
-                    partId = row.partId,
-                    lineId = row.lineId,
-                    backendId = row.backendId,
-                    BEDate = row.BEDate,
-                    earlistStartDate = row.EarliestStartDate,
-                    plannedStartDate = row.PlannedStartDate,
-                    latestStartDate = row.LatestStartDate,
-                    smtStart = row.SMTStart,
-                    smtEnd = row.SMTEnd
-                });
-            }
 
-            return View(schedule);
+                linePartScheduleViewModel linePartSchedule = new linePartScheduleViewModel();
+
+
+                linePartSchedule.schedule = new Schedule();
+
+
+
+                linePartSchedule.schedule.orderId = row.orderId;
+                linePartSchedule.schedule.partId = row.partId;
+                linePartSchedule.schedule.lineId = row.lineId;
+                linePartSchedule.schedule.backendId = row.backendId;
+                linePartSchedule.schedule.BEDate = row.BEDate;
+                linePartSchedule.schedule.earlistStartDate = row.EarliestStartDate;
+                linePartSchedule.schedule.plannedStartDate = row.PlannedStartDate;
+                linePartSchedule.schedule.latestStartDate = row.LatestStartDate;
+                linePartSchedule.schedule.smtStart = row.SMTStart;
+                linePartSchedule.schedule.smtEnd = row.SMTEnd;
+
+
+                linePartSchedule.lineName = LineController.getLineName(row.lineId);
+
+                linePartSchedule.partName = PartController.getPartName(row.partId);
+
+
+                scheduleViewModel.Add(linePartSchedule);
+
+
+            };
+            return View(scheduleViewModel);
+
+
         }
+
+
+
+
+
 
 
 
@@ -219,7 +246,7 @@ namespace Scheduler.Controllers
             /*
            int lineId = -1;
            int Index = 0;
-           
+
            List<Schedule> NextfreeLine = new List<Schedule>();
            NextfreeLine = GetAvailableLines(); // returns schedule object with next available lineId and smtEnd in order of most available line first
 

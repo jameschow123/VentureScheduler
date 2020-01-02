@@ -22,95 +22,133 @@
     <input type="submit" value="Import CSV">
 }
 
-<h2>Error Results:</h2>
+<div id="result">
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.lineName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.partName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.manufacturingTIme)
-        </th>
-        <th>
-            @Html.DisplayName("Message")
-        </th>
-        <th></th>
-    </tr>
 
-    @foreach (var item in Model)
-    {
+    <h2>Error Results:</h2>
+
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.lineName)
-
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.partName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.manufacturingTIme)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.error)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.lineName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.partName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.manufacturingTIme)
+            </th>
+            <th>
+                @Html.DisplayName("Message")
+            </th>
+            <th></th>
         </tr>
-    }
-</table>
+
+        @foreach (var item in Model)
+        {
+            if (item.selectedLine == 0 || item.selectedLine == -1)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.lineName)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.partName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.manufacturingTIme)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.error)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        }
+    </table>
 
 
-<h2>Successfully added</h2>
+    <h2>Successfully added</h2>
 
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.lineName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.partName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.manufacturingTIme)
-        </th>
-        <th>
-            @Html.DisplayName("Message")
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item2 in Model)
-    {
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item2.lineName)
-
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item2.partName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item2.manufacturingTIme)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item2.error)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.lineName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.partName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.manufacturingTIme)
+            </th>
+            <th>
+                @Html.DisplayName("Message")
+            </th>
+            <th></th>
         </tr>
-    }
+
+        @foreach (var item2 in Model)
+        {
+            if (item2.selectedLine != 0)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.lineName)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.partName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.manufacturingTIme)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.error)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        }
+
+
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        CheckAvailability();
 
 
 
-</table>
+
+
+
+    });
+
+
+
+       function CheckAvailability() {
+
+           if (@TempData["importManufacturingCSV"] == 1)
+                 $("#result").show();
+
+           else if (@TempData["importManufacturingCSV"]== 0)
+               $("#result").hide();
+
+
+
+            };
+
+
+</script>

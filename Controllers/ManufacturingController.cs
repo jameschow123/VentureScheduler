@@ -573,7 +573,7 @@ namespace Scheduler.Controllers
         {
             TempData["importManufacturingCSV"] = 0;
 
-            List<ManufacturingTime> MT = new List<ManufacturingTime>();
+            List<PartLineManufacturingViewModel> MT = new List<PartLineManufacturingViewModel>();
             return View(MT);
         }
 
@@ -845,7 +845,7 @@ namespace Scheduler.Controllers
                     //  workbook.Close(path);
 
 
-                    TempData["importOrderCSV"] = 1;
+                    TempData["importManufacturingCSV"] = 1;
                     return View(ErrorListMT);
                 }
                 else
