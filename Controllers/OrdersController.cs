@@ -79,14 +79,55 @@ namespace Scheduler.Controllers
             }
 
 
-            var listStatus = new List<SelectListItem>
-            {
-            new SelectListItem{ Text="unscheduled", Value = "unscheduled" },
-            new SelectListItem{ Text="scheduled", Value = "scheduled" },
-            new SelectListItem{ Text="processing", Value = "processing"},
-            new SelectListItem{ Text="completed", Value = "completed"},
 
-            };
+            OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
+
+            OrderPartViewModel.order = order;
+            //   OrderPartViewModel.selectedPart = order.partId;
+            //   OrderPartViewModel.selectedStatus = order.status;
+            //  OrderPartViewModel.selectedPriority = order.priority;
+
+            OrderPartViewModel.parts = parts;
+
+
+
+
+            return View(OrderPartViewModel);
+        }
+
+
+        public ActionResult editOrderCSV(int id)
+        {
+            var orderData = OrderProcessor.LoadOrder(id);
+
+            Order order = new Order();
+
+            foreach (var row in orderData)
+            {
+
+                order.orderId = row.orderId;
+                order.partId = row.partId;
+                order.projectName = row.projectName;
+                order.lastMaterialDate = row.lastMaterialDate;
+                order.shipDate = row.shipDate;
+                order.quantity = row.quantity;
+                order.status = row.status;
+                order.priority = row.priority;
+            }
+
+            List<Part> parts = new List<Part>();
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+
+                });
+            }
 
 
 
@@ -104,6 +145,7 @@ namespace Scheduler.Controllers
 
             return View(OrderPartViewModel);
         }
+
 
 
         [HttpPost, ActionName("editOrder")]
@@ -145,8 +187,6 @@ namespace Scheduler.Controllers
 
                         TempData["newOrderResult"] = 0;
                     }
-
-
 
 
 
@@ -199,12 +239,110 @@ namespace Scheduler.Controllers
             return View(OPViewModel);
         }
 
-
-        public ActionResult ViewOrders()
+        [HttpPost, ActionName("editOrderCSV")]
+        [ValidateAntiForgeryToken]
+        public ActionResult editOrderCSV(Order order)
         {
-            //ViewBag.Message = "Order List";
 
-            var data = OrderProcessor.LoadOrder();
+
+            //  order.partId = selectedPart;
+            //  order.status = selectedStatus;
+            //   order.priority = selectedPriority;
+
+            int updated = 0;
+
+
+
+
+
+
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    updated = OrderProcessor.updateOrder(order.orderId, order.partId, order.projectName, order.lastMaterialDate, order.shipDate, order.quantity, order.status, order.priority);
+
+
+
+                    //TempData["newOrderResult"] = created;
+
+
+                    if (updated == 1)
+                    {
+                        TempData["newOrderResult"] = 3;
+                    }
+                    else if (updated == 0)
+                    {
+
+                        TempData["newOrderResult"] = 0;
+                    }
+
+
+
+
+
+                    return RedirectToAction("reviewOrderCSVPost");
+                }
+                catch (Exception ex)
+                {
+                    //  TempData["newOrderResult"] = created;
+                    //eturn View(ex.Message);
+                    TempData["newOrderResult"] = 0;
+
+                    return RedirectToAction("reviewOrderCSVPost");
+                }
+
+            }
+
+
+
+
+
+
+
+
+            OrderPartViewModel OPViewModel = new OrderPartViewModel();
+
+            List<Part> parts = new List<Part>();
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+
+                });
+            }
+
+            OPViewModel.order = order;
+
+            OPViewModel.parts = parts;
+
+            //  OPViewModel.selectedPart = selectedPart;
+            // OPViewModel.selectedStatus = selectedStatus;
+            // OPViewModel.selectedPriority = selectedPriority;
+
+            return View(OPViewModel);
+        }
+
+
+
+
+        public ActionResult ViewOrders(string status)
+        {
+
+            var data = (dynamic)null;
+
+            //ViewBag.Message = "Order List";
+            if (status == null || status == "")
+                data = OrderProcessor.LoadOrder();
+            else
+                data = OrderProcessor.LoadOrder(status);
 
             List<Order> orders = new List<Order>();
 
@@ -217,7 +355,49 @@ namespace Scheduler.Controllers
                     projectName = row.projectName,
                     lastMaterialDate = row.lastMaterialDate,
                     shipDate = row.shipDate,
-                    quantity = row.quantity
+                    quantity = row.quantity,
+                    status = row.status,
+                    priority = row.priority
+                });
+            }
+
+            foreach (var row in data)
+            {
+
+
+            }
+
+
+
+
+
+
+            return View(orders);
+        }
+
+
+
+        public ActionResult ViewOrdersFilter(string status)
+        {
+            //ViewBag.Message = "Order List";
+
+            var data = OrderProcessor.LoadOrder(status);
+
+            List<Order> orders = new List<Order>();
+
+            foreach (var row in data)
+            {
+                orders.Add(new Order
+                {
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    projectName = row.projectName,
+                    lastMaterialDate = row.lastMaterialDate,
+                    shipDate = row.shipDate,
+                    quantity = row.quantity,
+                    status = row.status,
+                    priority = row.priority
+
                 });
             }
 
@@ -247,6 +427,31 @@ namespace Scheduler.Controllers
 
             return orders;
         }
+
+
+        public static Order getOrderById(int orderId)
+        {
+
+            var data = OrderProcessor.LoadOrder(orderId);
+
+            Order orders = new Order();
+
+            foreach (var row in data)
+            {
+
+                orders.orderId = row.orderId;
+                orders.partId = row.partId;
+                orders.projectName = row.projectName;
+                orders.lastMaterialDate = row.lastMaterialDate;
+                orders.shipDate = row.shipDate;
+                orders.quantity = row.quantity;
+            };
+
+
+            return orders;
+        }
+
+
 
 
         // POST: Orders
@@ -425,13 +630,38 @@ namespace Scheduler.Controllers
                 int deleted = OrderProcessor.DeleteOrder(
                     id
                     );
-
+                if (deleted == 1)
+                    TempData["newOrderResult"] = 2;
+                else
+                    TempData["newOrderResult"] = 0;
                 return RedirectToAction("ViewOrders");
 
             }
 
             return View();
         }
+
+
+        public ActionResult deleteOrderCSV(int id)
+        {
+            if (ModelState.IsValid)
+            {
+
+                int deleted = OrderProcessor.DeleteOrder(
+                    id
+                    );
+                if (deleted == 1)
+                    TempData["newOrderResult"] = 2;
+                else
+                    TempData["newOrderResult"] = 0;
+
+                return RedirectToAction("reviewOrderCSVPost");
+
+            }
+
+            return View();
+        }
+
 
         [HttpPost]
         public JsonResult CheckOrderId(int orderId)
@@ -498,7 +728,7 @@ namespace Scheduler.Controllers
             TempData["importOrderCSV"] = 0;
 
             List<Order> order = new List<Order>();
-            return View(order);
+            return View();
         }
 
 
@@ -510,7 +740,7 @@ namespace Scheduler.Controllers
             {
                 //ViewBag.Error = "Please select a excel file";
                 TempData["ErrorCSV"] = "Please select a excel file";
-                return RedirectToAction("ViewOrders");
+                return RedirectToAction("importOrderCSV");
 
             }
             else
@@ -700,14 +930,95 @@ namespace Scheduler.Controllers
             return View(orders);
         }
 
-        [HttpPost]
-        public ActionResult reviewOrderCSVPost(List<Order> orders)
+        [HttpPost, ActionName("reviewOrderCSVPost")]
+        public ActionResult reviewOrderCSVPost()
         {
-            TempData["importOrderCSV"] = 0;
-            // add orders and return results list
 
-            List<Order> order = new List<Order>();
-            return View(order);
+
+            // display vieworder page with status (unscheduled)
+            // return RedirectToAction("ViewOrders", new { status = "unscheduled" });
+
+
+            var data = OrderProcessor.LoadOrder("unscheduled");
+
+            List<Order> orders = new List<Order>();
+
+            foreach (var row in data)
+            {
+                orders.Add(new Order
+                {
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    projectName = row.projectName,
+                    lastMaterialDate = row.lastMaterialDate,
+                    shipDate = row.shipDate,
+                    quantity = row.quantity,
+                    status = row.status,
+                    priority = row.priority
+                });
+            }
+
+            //   OrderDetail ObjorderDetail = new OrderDetail();
+            //  ObjorderDetail.OrderDetails = orders;
+
+            return View(orders);
+        }
+
+
+        [HttpPost, ActionName("reviewOrderCSVSchedule")]
+        public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status)
+        {
+
+
+
+            //interate though the array
+
+            for (int i = 0; i < status.Length; i++)
+            {
+                //check status , if status = unschedule , dont schedule 
+
+                if (status.Equals("unscheduled"))
+                {
+                    // dont schedule here
+
+                }
+                else
+                {
+                    Order order = getOrderById(orderId[i]);
+                    ScheduleController.scheduleOrder(order);
+
+
+                }
+
+
+
+
+            }
+
+            // display vieworder page with status (unscheduled)
+            // return RedirectToAction("ViewOrders", new { status = "unscheduled" });
+
+
+            var data = OrderProcessor.LoadOrder("unscheduled");
+
+            List<Order> orders1 = new List<Order>();
+
+            foreach (var row in data)
+            {
+                orders1.Add(new Order
+                {
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    projectName = row.projectName,
+                    lastMaterialDate = row.lastMaterialDate,
+                    shipDate = row.shipDate,
+                    quantity = row.quantity,
+                    status = row.status,
+                    priority = row.priority
+                });
+            }
+
+            return View();
         }
 
 

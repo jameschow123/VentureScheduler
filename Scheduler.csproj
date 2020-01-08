@@ -465,6 +465,8 @@
     <Content Include="Views\Manufacturing\updateManufacturingTime.cshtml" />
     <Content Include="Views\Manufacturing\importManufacturingCSV.cshtml" />
     <Content Include="Views\Orders\reviewOrderCSV.cshtml" />
+    <Content Include="Views\Orders\editOrderCSV.cshtml" />
+    <Content Include="Views\Orders\reviewOrderCSVPost.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

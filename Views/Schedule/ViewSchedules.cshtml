@@ -36,15 +36,15 @@
 
     <table class="table" id="tblLocations">
         <tr>
-     
+
             <th>
                 @Html.DisplayNameFor(model => model.partName)
             </th>
-        
+
             <th>
                 @Html.DisplayNameFor(model => model.lineName)
             </th>
-      
+
             <th>
                 @Html.DisplayNameFor(model => model.schedule.BEDate)
             </th>
@@ -72,17 +72,17 @@
 
             <tr>
                 <td>
-                   
+
                     <input type="hidden" name="orderId" value=" @item.schedule.orderId" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.partName)
                 </td>
-             
+
                 <td>
                     @Html.DisplayFor(modelItem => item.lineName)
                 </td>
-         
+
                 <td>
                     @Html.DisplayFor(modelItem => item.schedule.BEDate)
                 </td>

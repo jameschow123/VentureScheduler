@@ -1,0 +1,126 @@
+﻿@model IEnumerable<Scheduler.Models.Order>
+
+@{
+    ViewBag.Title = "reviewOrderCSVPost";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Review orders</h2>
+<h4>Please review and confirm orders to be scheduled</h4>
+@using (Html.BeginForm("reviewOrderCSVSchedule", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.orderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.partId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.projectName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.lastMaterialDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.shipDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.quantity)
+            </th>
+            <th>
+                @Html.DisplayName("Schedule?")
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderId)
+                    <input type="hidden" name="orderId" value=" @item.orderId" />
+
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.partId, new { @id = item.partId })
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projectName, new { @id = item.projectName })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.lastMaterialDate, new { @id = item.lastMaterialDate })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.shipDate, new { @id = item.shipDate })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.quantity, new { @id = item.quantity })
+                </td>
+
+                <td>
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            @{
+                                List<SelectListItem> listItems = new List<SelectListItem>();
+                                listItems.Add(new SelectListItem
+                                {
+                                    Text = "No",
+                                    Value = "unscheduled"
+                                });
+                                listItems.Add(new SelectListItem
+                                {
+                                    Text = "Yes",
+                                    Value = "scheduled",
+                                    Selected = true
+
+                                });
+                            }
+
+                            @Html.DropDownListFor(modelItem => item.status, listItems, new { @id = item.status })
+                            <input type="hidden" name="status" value=" @item.status" />
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    @Html.ActionLink("Edit", "editOrderCSV", new { id = item.orderId }) |
+                    @Html.ActionLink("Delete", "deleteOrderCSV", new { id = item.orderId })
+                </td>
+            </tr>
+        }
+
+
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Schedule order" class="btn btn-primary">
+    </div>
+}
+@if (TempData["newOrderResult"] != null)
+{
+    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+        if (@TempData["newOrderResult"] == 1)
+            swal("Success!", "New order is added and scheduled!", "success");
+             else if (@TempData["newOrderResult"] == -1)
+            swal("Error!", "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.", "error");
+              else if (@TempData["newOrderResult"] == 0)
+                    swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
+        else if (@TempData["newOrderResult"] == 2)
+            swal("Success!", "Order is deleted!", "success");
+
+        else
+            swal("Error!", "An error has occurred!", "error");
+
+       if (@TempData["newOrderResult"] == 3)
+                    swal("Success!", "Order is Updated!", "success");
+
+    </script>
+}

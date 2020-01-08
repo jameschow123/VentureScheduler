@@ -25,126 +25,128 @@
 
 
 <br />
+@*
+    <div id="result">
 
-<div id="result">
+        @if (!Model.Equals(0))
+        {
 
-    @if (!Model.Equals(0))
-    {
-
-        <h2>Error Results:</h2>
+            <h2>Error Results:</h2>
 
 
-        <table class="table">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.orderId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.partId)
-                </th>
-                <th>
-                    @Html.DisplayName("Message")
-                </th>
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.orderId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partId)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Message")
+                    </th>
 
-                <th></th>
-            </tr>
+                    <th></th>
+                </tr>
 
-            @foreach (var item in Model)
-            {
-                if (item.quantity == 0 || item.quantity == -1)
+                @foreach (var item in Model)
                 {
-                    <tr>
-                        <th>
-                            @Html.DisplayFor(modelItem => item.orderId)
-                        </th>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.partId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.projectName)
-                        </td>
+                    if (item.quantity == 0 || item.quantity == -1)
+                    {
+                        <tr>
+                            <th>
+                                @Html.DisplayFor(modelItem => item.orderId)
+                            </th>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.partId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.projectName)
+                            </td>
 
 
-                    </tr>
+                        </tr>
+                    }
                 }
-            }
 
-        </table>
+            </table>
 
-        <br />
-
-
-        <h2>Successfully added</h2>
+            <br />
 
 
-        <table class="table">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.orderId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.partId)
-                </th>
-                <th>
-                    @Html.DisplayName("Message")
-                </th>
+            <h2>Successfully added</h2>
 
-                <th></th>
-            </tr>
 
-            @foreach (var item2 in Model)
-            {
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.orderId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partId)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Message")
+                    </th>
 
-                if (item2.quantity != 0)
+                    <th></th>
+                </tr>
+
+                @foreach (var item2 in Model)
                 {
-                    <tr>
-                        <th>
-                            @Html.DisplayFor(modelItem => item2.orderId)
-                        </th>
-                        <td>
-                            @Html.DisplayFor(modelItem => item2.partId)
-                        </td>
-                        <td>
-                            @Html.DisplayName("Success!")
-                        </td>
+
+                    if (item2.quantity != 0)
+                    {
+                        <tr>
+                            <th>
+                                @Html.DisplayFor(modelItem => item2.orderId)
+                            </th>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.partId)
+                            </td>
+                            <td>
+                                @Html.DisplayName("Success!")
+                            </td>
 
 
-                    </tr>
+                        </tr>
+                    }
                 }
-            }
 
 
-        </table>
+            </table>
 
-    }
-
-
-</div>
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        CheckAvailability();
+        }
 
 
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            CheckAvailability();
 
 
 
 
-    });
+
+
+        });
 
 
 
-       function CheckAvailability() {
+           function CheckAvailability() {
 
-           if (@TempData["importOrderCSV"] == 1)
-                 $("#result").show();
+               if (@TempData["importOrderCSV"] == 1)
+                     $("#result").show();
 
-           else if (@TempData["importOrderCSV"] == 0)
-               $("#result").hide();
-
-
-
-            };
+               else if (@TempData["importOrderCSV"] == 0)
+                   $("#result").hide();
 
 
-</script>
+
+                };
+
+
+    </script>
+
+*@

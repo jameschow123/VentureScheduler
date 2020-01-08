@@ -6,7 +6,7 @@
 }
 
 <h2>Review Orders </h2>
-@using (Html.BeginForm("reviewOrderCSVPost", "Order", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("reviewOrderCSVPost", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div id="result">
 
@@ -146,7 +146,7 @@
                                 @Html.DisplayFor(modelItem => item2.StringTempResult)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "editOrder", new { id = item2.orderId }) |
+                                @Html.ActionLink("Edit", "editOrderCSV", new { id = item2.orderId }) |
                                 @Html.ActionLink("Delete", "deleteOrder", new { id = item2.orderId })
                             </td>
                         </tr>
@@ -156,38 +156,37 @@
 
             </table>
         }
-        <input type="submit" value="Schedule Orders">
+
+
+        <input type="submit" value="Next">
 
     </div>
 
 }
 
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        CheckAvailability();
-
+@if (TempData["newOrderResult"] != null)
+{
+    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
 
 
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
+    <script type="text/javascript">
+        if (@TempData["newOrderResult"] == 1)
+            swal("Success!", "New order is added and scheduled!", "success");
+             else if (@TempData["newOrderResult"] == -1)
+            swal("Error!", "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.", "error");
+              else if (@TempData["newOrderResult"] == 0)
+                    swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
+        else if (@TempData["newOrderResult"] == 2)
+            swal("Success!", "Order is deleted!", "success");
 
+        else
+            swal("Error!", "An error has occurred!", "error");
 
-    });
+       if (@TempData["newOrderResult"] == 3)
+                    swal("Success!", "Order is Updated!", "success");
 
-
-
-       function CheckAvailability() {
-
-           if (@TempData["importOrderCSV"] == 1)
-                 $("#result").show();
-
-           else if (@TempData["importOrderCSV"] == 0)
-               $("#result").hide();
-
-
-
-            };
-
-
-</script>
+    </script>
+}

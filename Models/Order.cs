@@ -11,6 +11,7 @@ namespace Scheduler.Models
     {
 
 
+
         [Display(Name = "Order ID")]
         [Required(ErrorMessage = "Order ID is required!")]
         [Range(00000000, 99999999, ErrorMessage = "Please enter a valid orderID")]
@@ -67,4 +68,14 @@ namespace Scheduler.Models
 
 
     }
+
+    public class OrderDetail
+    {
+        /// <summary>  
+        /// To hold list of orders  
+        /// </summary>  
+        public List<Order> OrderDetails { get; set; }
+
+    }
+
 }

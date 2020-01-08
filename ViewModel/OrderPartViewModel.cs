@@ -15,6 +15,8 @@ namespace Scheduler.ViewModel
 
         [Display(Name = "Parts")]
         public int selectedPart { get; set; }
+        [Display(Name = "Part Name")]
+        public string partName { get; set; }
         public List<Part> parts { get; set; }
 
 
