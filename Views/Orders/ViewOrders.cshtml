@@ -93,9 +93,11 @@
              else if (@TempData["newOrderResult"] == -1)
             swal("Error!", "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.", "error");
               else if (@TempData["newOrderResult"] == 0)
-                    swal("Error!",  "unknown error has occurred during scheduling , please contact administrator.", "error");
+                    swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
         else if (@TempData["newOrderResult"] == 2)
-                    swal("Success!", "Order is deleted!", "success");
+            swal("Success!", "Order is deleted!", "success");
+             else if (@TempData["newOrderResult"] == 3)
+                    swal("Success!", "Order is Updated!", "success");
         else
             swal("Error!", "An error has occurred!", "error");
 

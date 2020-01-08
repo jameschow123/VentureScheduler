@@ -1,0 +1,193 @@
+﻿@model IEnumerable<Scheduler.Models.Order>
+
+@{
+    ViewBag.Title = "reviewOrderCSV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Review Orders </h2>
+@using (Html.BeginForm("reviewOrderCSVPost", "Order", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="result">
+
+        @if (!Model.Equals(0))
+        {
+
+            <h2>Error Results:</h2>
+
+
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.projectName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.lastMaterialDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.shipDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.quantity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.priority)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Message")
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    if (item.intTempResult == 0 || item.intTempResult == -1)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.partId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.projectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.lastMaterialDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.shipDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.quantity)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.status)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.priority)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StringTempResult)
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+
+            </table>
+
+            <br />
+
+            <h2>Successfully added</h2>
+
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.projectName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.lastMaterialDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.shipDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.quantity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.priority)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Message")
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item2 in Model)
+                {
+
+                    if (item2.intTempResult != 0)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.partId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.projectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.lastMaterialDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.shipDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.quantity)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.status)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.priority)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item2.StringTempResult)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "editOrder", new { id = item2.orderId }) |
+                                @Html.ActionLink("Delete", "deleteOrder", new { id = item2.orderId })
+                            </td>
+                        </tr>
+                    }
+                }
+
+
+            </table>
+        }
+        <input type="submit" value="Schedule Orders">
+
+    </div>
+
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        CheckAvailability();
+
+
+
+
+
+
+    });
+
+
+
+       function CheckAvailability() {
+
+           if (@TempData["importOrderCSV"] == 1)
+                 $("#result").show();
+
+           else if (@TempData["importOrderCSV"] == 0)
+               $("#result").hide();
+
+
+
+            };
+
+
+</script>

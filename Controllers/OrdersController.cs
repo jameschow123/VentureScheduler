@@ -60,7 +60,8 @@ namespace Scheduler.Controllers
                 order.lastMaterialDate = row.lastMaterialDate;
                 order.shipDate = row.shipDate;
                 order.quantity = row.quantity;
-
+                order.status = row.status;
+                order.priority = row.priority;
             }
 
             List<Part> parts = new List<Part>();
@@ -77,16 +78,127 @@ namespace Scheduler.Controllers
                 });
             }
 
+
+            var listStatus = new List<SelectListItem>
+            {
+            new SelectListItem{ Text="unscheduled", Value = "unscheduled" },
+            new SelectListItem{ Text="scheduled", Value = "scheduled" },
+            new SelectListItem{ Text="processing", Value = "processing"},
+            new SelectListItem{ Text="completed", Value = "completed"},
+
+            };
+
+
+
             OrderPartViewModel OrderPartViewModel = new OrderPartViewModel();
 
             OrderPartViewModel.order = order;
-            OrderPartViewModel.selectedPart = order.partId;
+            //   OrderPartViewModel.selectedPart = order.partId;
+            //   OrderPartViewModel.selectedStatus = order.status;
+            //  OrderPartViewModel.selectedPriority = order.priority;
 
             OrderPartViewModel.parts = parts;
 
 
+
+
             return View(OrderPartViewModel);
         }
+
+
+        [HttpPost, ActionName("editOrder")]
+        [ValidateAntiForgeryToken]
+        public ActionResult editOrder(Order order)
+        {
+
+
+            //  order.partId = selectedPart;
+            //  order.status = selectedStatus;
+            //   order.priority = selectedPriority;
+
+            int updated = 0;
+
+
+
+
+
+
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    updated = OrderProcessor.updateOrder(order.orderId, order.partId, order.projectName, order.lastMaterialDate, order.shipDate, order.quantity, order.status, order.priority);
+
+
+
+                    //TempData["newOrderResult"] = created;
+
+
+                    if (updated == 1)
+                    {
+                        TempData["newOrderResult"] = 3;
+                    }
+                    else if (updated == 0)
+                    {
+
+                        TempData["newOrderResult"] = 0;
+                    }
+
+
+
+
+
+
+
+                    return RedirectToAction("ViewOrders");
+                }
+                catch (Exception ex)
+                {
+                    //  TempData["newOrderResult"] = created;
+                    //eturn View(ex.Message);
+                    TempData["newOrderResult"] = 0;
+
+                    return RedirectToAction("ViewOrders");
+                }
+
+            }
+
+
+
+
+
+
+
+
+            OrderPartViewModel OPViewModel = new OrderPartViewModel();
+
+            List<Part> parts = new List<Part>();
+            var data = PartProcessor.LoadPart();
+
+            foreach (var row in data)
+            {
+                parts.Add(new Part
+                {
+                    partId = row.partId,
+                    partName = row.partName,
+                    side = row.side
+
+                });
+            }
+
+            OPViewModel.order = order;
+
+            OPViewModel.parts = parts;
+
+            //  OPViewModel.selectedPart = selectedPart;
+            // OPViewModel.selectedStatus = selectedStatus;
+            // OPViewModel.selectedPriority = selectedPriority;
+
+            return View(OPViewModel);
+        }
+
 
         public ActionResult ViewOrders()
         {
@@ -258,16 +370,18 @@ namespace Scheduler.Controllers
                     if (created == 1)
                     {
                         // Schedule object
-                        result = ScheduleController.scheduleOrder(order);
-                        if (result == 1)
-                            TempData["newOrderResult"] = "New order is added and scheduled";
-                        else if (result == -1)
+                        // result = ScheduleController.scheduleOrder(order);
+                        if (created == 1)
+
+                            TempData["newOrderResult"] = "New order is added";
+
+                        else if (created == -1)
                         {
                             //rollback and remove order
                             OrderProcessor.DeleteOrder(order.orderId);
                             TempData["newOrderResult"] = "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.";
                         }
-                        else if (result == 0)
+                        else if (created == 0)
                         {
 
                             TempData["newOrderResult"] = "unknown error has occurred during scheduling , please contact administrator.";
@@ -278,7 +392,8 @@ namespace Scheduler.Controllers
 
 
 
-                    return result;
+                    //return result;
+                    return created;
                 }
                 catch (Exception ex)
                 {
@@ -452,8 +567,14 @@ namespace Scheduler.Controllers
                         Order order = new Order();
                         order.orderId = int.Parse(((Excel.Range)range.Cells[row, 1]).Text);
                         order.partId = int.Parse(((Excel.Range)range.Cells[row, 2]).Text);
+                        order.projectName = ((Excel.Range)range.Cells[row, 3]).Text;
+                        order.lastMaterialDate = DateTime.Parse(((Excel.Range)range.Cells[row, 4]).Text);
+                        order.shipDate = DateTime.Parse(((Excel.Range)range.Cells[row, 5]).Text);
+                        order.quantity = int.Parse(((Excel.Range)range.Cells[row, 6]).Text);
 
-
+                        //default values
+                        order.status = "unschedued";
+                        order.priority = 3;
 
                         // check if orderID already exist. if exist skip
                         bool continueCond = false;
@@ -470,8 +591,9 @@ namespace Scheduler.Controllers
                         // OrderID already exist , dont add 
                         if (continueCond == true)
                         {
-                            order.quantity = 0;
-                            order.projectName = " OrderID already exist in database. Check OrderId or edit existing order in View order page";
+
+                            order.intTempResult = 0;
+                            order.StringTempResult = " OrderID already exist in database. Check OrderId or edit existing order in View order page";
                             ErrorListOrder.Add(order);
                             continue;
                         }
@@ -490,17 +612,12 @@ namespace Scheduler.Controllers
                         // Part is not found , dont add current order
                         if (continueCond2 == false)
                         {
-                            order.quantity = 0;
-                            order.projectName = " ProductId does not exist in database. Check partId or add part data to Part Database";
+                            order.intTempResult = 0;
+                            order.StringTempResult = " ProductId does not exist in database. Check partId or add part data to Part Database";
                             ErrorListOrder.Add(order);
                             continue;
                         }
 
-
-                        order.projectName = ((Excel.Range)range.Cells[row, 3]).Text;
-                        order.lastMaterialDate = DateTime.Parse(((Excel.Range)range.Cells[row, 4]).Text);
-                        order.shipDate = DateTime.Parse(((Excel.Range)range.Cells[row, 5]).Text);
-                        order.quantity = int.Parse(((Excel.Range)range.Cells[row, 6]).Text);
 
 
 
@@ -523,10 +640,15 @@ namespace Scheduler.Controllers
 
                         if (importResult == -1 || importResult == 0)
                         {
-                            //rollback and remove order
-                            order.quantity = 0;
-                            order.projectName = TempData["newOrderResult"].ToString();
+                            order.intTempResult = 0;
+                            order.StringTempResult = TempData["newOrderResult"].ToString();
                         }
+                        else
+                        {
+                            order.intTempResult = 1;
+                            order.StringTempResult = TempData["newOrderResult"].ToString();
+                        }
+
 
 
 
@@ -544,12 +666,17 @@ namespace Scheduler.Controllers
                     //  DataLibrary.Models.orderModel orderModel = new orderModel();
 
 
-                    application.Workbooks.Close();
+                    workbook.Save();
+                    workbook.Close(true);
+                    application.Quit();
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(application);
                     //  workbook.Close(path);
 
 
                     TempData["importOrderCSV"] = 1;
-                    return View(ErrorListOrder);
+                    //return View(ErrorListOrder);
+
+                    return View("reviewOrderCSV", ErrorListOrder);
                 }
                 else
                 {
@@ -563,6 +690,26 @@ namespace Scheduler.Controllers
 
 
         }
+
+
+        public ActionResult reviewOrderCSV(List<Order> orders)
+        {
+            TempData["importOrderCSV"] = 0;
+
+            List<Order> order = new List<Order>();
+            return View(orders);
+        }
+
+        [HttpPost]
+        public ActionResult reviewOrderCSVPost(List<Order> orders)
+        {
+            TempData["importOrderCSV"] = 0;
+            // add orders and return results list
+
+            List<Order> order = new List<Order>();
+            return View(order);
+        }
+
 
 
 

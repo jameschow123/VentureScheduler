@@ -23,11 +23,10 @@ namespace Scheduler.Models
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Please enter a project name between 5-100 characters")]
         public string projectName { get; set; }
         [Required(ErrorMessage = "Order date is required!")]
-        [Display(Name = "Order Date (MM/DD/YYYY HH:mm)")]
-        [DisplayFormat(DataFormatString = "{0:MM-DD-YYYY HH:mm}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Last Material date")]
         [DataType(DataType.DateTime)]
         public DateTime lastMaterialDate { get; set; }
-        [Display(Name = "Last material in Date (MM/DD/YYYY HH:mm)")]
+        [Display(Name = "Shipment Date")]
         [Required(ErrorMessage = "Ship Date is required!")]
         [DataType(DataType.DateTime)]
         public DateTime shipDate { get; set; }
@@ -36,11 +35,15 @@ namespace Scheduler.Models
         [Range(1, 10000, ErrorMessage = "Please enter a valid quantity!")]
         public int quantity { get; set; }
 
+        [Required(ErrorMessage = "Status is required!")]
+        public string status { get; set; }
+        [Required(ErrorMessage = "priority is required!")]
+        [Range(1, 3, ErrorMessage = "Please enter a valid priority from 1(highest)-3(normal)")]
+        public int priority { get; set; }
 
 
-
-
-
+        public int intTempResult { get; set; }
+        public string StringTempResult { get; set; }
 
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
@@ -54,7 +57,7 @@ namespace Scheduler.Models
             }
             if (shipDate < DateTime.Today)
             {
-                ValidationResult mss = new ValidationResult("shipdate must be greater today");
+                ValidationResult mss = new ValidationResult("shipdate must be greater then today");
                 res.Add(mss);
 
             }
