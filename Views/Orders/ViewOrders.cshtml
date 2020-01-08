@@ -96,12 +96,12 @@
                     swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
         else if (@TempData["newOrderResult"] == 2)
             swal("Success!", "Order is deleted!", "success");
-             else if (@TempData["newOrderResult"] == 3)
-                    swal("Success!", "Order is Updated!", "success");
+       
         else
             swal("Error!", "An error has occurred!", "error");
 
-
+       if (@TempData["newOrderResult"] == 3)
+                    swal("Success!", "Order is Updated!", "success");
 
     </script>
 }
