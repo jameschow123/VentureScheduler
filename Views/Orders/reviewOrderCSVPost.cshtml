@@ -9,7 +9,7 @@
 <h4>Please review and confirm orders to be scheduled</h4>
 @using (Html.BeginForm("reviewOrderCSVSchedule", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <table class="table">
+    <table id="tblOrders" class="table">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.orderId)
@@ -34,7 +34,6 @@
             </th>
             <th></th>
         </tr>
-
         @foreach (var item in Model)
         {
             <tr>
@@ -76,12 +75,18 @@
                                     Text = "Yes",
                                     Value = "scheduled",
                                     Selected = true
-
                                 });
                             }
 
-                            @Html.DropDownListFor(modelItem => item.status, listItems, new { @id = item.status })
-                            <input type="hidden" name="status" value=" @item.status" />
+                            @Html.DropDownListFor(modelItem => item.status, new SelectList(listItems, "Value", "Text"), new { @id = "status_" + item.orderId, @class = "status", @onchange = "javascript:callChangefunc(this.id,this.value)" })
+                            @Html.HiddenFor(modelItem => item.StringTempResult)
+                            <input type="hidden" name="status" id="hidden_@item.orderId" value=@item.status />
+
+
+
+
+
+
                         </div>
                     </div>
                 </td>
@@ -91,36 +96,99 @@
                     @Html.ActionLink("Delete", "deleteOrderCSV", new { id = item.orderId })
                 </td>
             </tr>
-        }
 
+
+        }
 
     </table>
     <div class="form-group">
-        <input type="submit" value="Schedule order" class="btn btn-primary">
+        <input type="submit" id="btnSave" value="Schedule order" class="btn btn-primary">
     </div>
 }
-@if (TempData["newOrderResult"] != null)
-{
-    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
 
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <script type="text/javascript">
-        if (@TempData["newOrderResult"] == 1)
-            swal("Success!", "New order is added and scheduled!", "success");
-             else if (@TempData["newOrderResult"] == -1)
-            swal("Error!", "Manufacturing Time Data does not exist for this part.Enter part / line data in Line page or change part.", "error");
-              else if (@TempData["newOrderResult"] == 0)
-                    swal("Error!",  "unknown error has occurred , please contact administrator.", "error");
-        else if (@TempData["newOrderResult"] == 2)
-            swal("Success!", "Order is deleted!", "success");
+<script type="text/javascript">
 
-        else
-            swal("Error!", "An error has occurred!", "error");
 
-       if (@TempData["newOrderResult"] == 3)
-                    swal("Success!", "Order is Updated!", "success");
+    function callChangefunc(id, val) {
 
-    </script>
-}
+
+
+        var arr = id.split('_');
+        currentId = arr[1];
+
+        //set hidden field value
+        var s = document.getElementById("hidden_" + currentId);
+        console.log(s.val)
+
+        s.value = val;
+        console.log(s.val)
+        console.log(s)
+
+        // $("#" + "hidden_" + currentId).val(val);
+        // alert($("#hidden_" + currentId) + val)
+
+
+    }
+
+
+    $(function () {
+        $("#status").on("change", function () {
+            $("#SelectedvendorText").val($(this).text());
+        });
+    });
+
+
+
+    $(function () {
+
+        $('select[name="status"]').on('click', function () {
+            alert("test");
+            console.log("test");
+            var hiddenId = $(this).attr('class');
+            var persistValue = $(this).val();
+            $('#' + hiddenId).val(persistValue);
+        });
+    });
+
+
+
+    $("body").on("click", "#btnSave", function () {
+        //Loop through the Table rows and build a JSON array.
+        var orders = new Array();
+        $("#tblOrders TBODY TR").each(function () {
+            var row = $(this).val();
+            console.log(row);
+            var order = {};
+            order.id = row.find("TD").eq(0).html();
+            order.status = row.find("TD").eq(6).html();
+            console.log(order.id);
+            alert(order.status);
+
+            order.push(order);
+
+            console.log(order);
+        });
+
+        //Send the JSON array to Controller using AJAX.
+        $.ajax({
+            type: "POST",
+            url: "/Home/InsertCustomers",
+            data: JSON.stringify(customers),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (r) {
+                alert(r + " record(s) inserted.");
+            }
+        });
+    });
+
+
+
+
+
+
+
+</script>

@@ -1,0 +1,131 @@
+﻿@model IEnumerable<Scheduler.Models.Order>
+
+@{
+    ViewBag.Title = "scheduledResults";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Scheduled Results</h2>
+
+<div id="result">
+
+    @if (!Model.Equals(0))
+    {
+
+        <h2>Error Results:</h2>
+
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.orderId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.partId)
+                </th>
+                <th>
+                    @Html.DisplayName("Message")
+                </th>
+
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                if (item.intTempResult == 0 || item.intTempResult == -1)
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayFor(modelItem => item.orderId)
+                        </th>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.partId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StringTempResult)
+                        </td>
+
+
+                    </tr>
+                }
+            }
+
+        </table>
+
+        <br />
+
+
+        <h2>Successfully added</h2>
+
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.orderId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.partId)
+                </th>
+                <th>
+                    @Html.DisplayName("Message")
+                </th>
+
+                <th></th>
+            </tr>
+
+            @foreach (var item2 in Model)
+            {
+
+                if (item2.intTempResult == 1)
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayFor(modelItem => item2.orderId)
+                        </th>
+                        <td>
+                            @Html.DisplayFor(modelItem => item2.partId)
+                        </td>
+                        <td>
+                            @Html.DisplayName("Success!")
+                        </td>
+
+
+                    </tr>
+                }
+            }
+
+
+        </table>
+
+    }
+
+
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            CheckAvailability();
+
+
+
+
+
+
+        });
+
+
+
+           function CheckAvailability() {
+
+               if (@TempData["importOrderCSV"] == 1)
+                     $("#result").show();
+
+               else if (@TempData["importOrderCSV"] == 0)
+                   $("#result").hide();
+
+
+
+                };
+
+
+</script>

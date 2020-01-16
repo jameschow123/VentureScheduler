@@ -33,6 +33,8 @@ namespace Scheduler.ViewModel
         public string lineName { get; set; }
         [Display(Name = "Part Name")]
         public string partName { get; set; }
+        [Display(Name = "Order Name")]
+        public string orderName { get; set; }
 
         public string error { get; set; }
     }

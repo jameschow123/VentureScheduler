@@ -10,8 +10,24 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/smoothness/jquery-ui.css" />
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
 <script type="text/javascript">
+
+    var neworder = new Array();
+    var $sortableList = $("#your-list");
+
+var sortEventHandler = function(event, ui){
+    console.log("New sort order!");
+
+
+    var listElements = $("#tblLocations").children();
+
+    console.log(listElements); // [ <li>, <li>, ... ]
+};
+
+       
+
     $(function () {
         $("#tblLocations").sortable({
+                 stop:sortEventHandler,
             items: 'tr:not(tr:first-child)',
             cursor: 'pointer',
             axis: 'y',
@@ -24,19 +40,42 @@
             },
             receive: function (e, ui) {
                 $(this).find("tbody").append(ui.item);
-            }
+            },
         });
     });
+
+   $('#submitTest').submit(function () {
+
+            console.log("submit test ")
+
+            if (neworder.length < 1) {
+                return false;
+            }
+             console.log(neworder.length)
+            $.ajax({
+                url: "/Schedule/SavePriority", type: "POST", dataType: "json",
+                data: {  'order': $( "#tblLocations" ).sortable('toArray') },
+                success: function (result) {
+                    $('#ShowResultHere').text(result);
+                    $("#submitTest").hide();//  .tex.html(result);
+                }
+            });
+            return false;
+        });
+    
+
 </script>
 
 
-@using (Html.BeginForm("ViewSchedules", "Schedule", FormMethod.Post))
+@using (Html.BeginForm("ViewSchedules", "Schedule", FormMethod.Post, new { id = "submitTest" }))
 {
     <h2>View Schedules</h2>
 
     <table class="table" id="tblLocations">
         <tr>
-
+            <th>
+                @Html.DisplayNameFor(model => model.orderName)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.partName)
             </th>
@@ -44,19 +83,21 @@
             <th>
                 @Html.DisplayNameFor(model => model.lineName)
             </th>
+            @*
+                <th>
+                    @Html.DisplayNameFor(model => model.schedule.BEDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.schedule.latestStartDate)
+                </th>
 
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.BEDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.latestStartDate)
-            </th>
+            *@
             <th>
                 @Html.DisplayNameFor(model => model.schedule.smtStart)
             </th>
@@ -69,11 +110,12 @@
 
         @foreach (var item in Model)
         {
+            <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+            @Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id"})
 
-            <tr>
+            <tr >
                 <td>
-
-                    <input type="hidden" name="orderId" value=" @item.schedule.orderId" />
+                    @Html.DisplayFor(modelItem => item.orderName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.partName)
@@ -82,19 +124,20 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.lineName)
                 </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.BEDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
-                </td>
+                @*
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.BEDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
+                    </td>
+                *@
                 <td>
                     @Html.DisplayFor(modelItem => item.schedule.smtStart)
                 </td>
@@ -117,3 +160,4 @@
 
     <input type="submit" value="Update Preference" />
 }
+

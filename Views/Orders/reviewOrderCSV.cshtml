@@ -18,9 +18,7 @@
 
             <table class="table">
                 <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.partId)
-                    </th>
+                 
                     <th>
                         @Html.DisplayNameFor(model => model.projectName)
                     </th>
@@ -50,9 +48,7 @@
                     if (item.intTempResult == 0 || item.intTempResult == -1)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.partId)
-                            </td>
+                        
                             <td>
                                 @Html.DisplayFor(modelItem => item.projectName)
                             </td>
@@ -88,9 +84,7 @@
 
             <table class="table">
                 <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.partId)
-                    </th>
+                 
                     <th>
                         @Html.DisplayNameFor(model => model.projectName)
                     </th>
@@ -120,36 +114,37 @@
 
                     if (item2.intTempResult != 0)
                     {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.partId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.projectName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.lastMaterialDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.shipDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.quantity)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.status)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.priority)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item2.StringTempResult)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "editOrderCSV", new { id = item2.orderId }) |
-                                @Html.ActionLink("Delete", "deleteOrder", new { id = item2.orderId })
-                            </td>
-                        </tr>
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item2.projectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.lastMaterialDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.shipDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.priority)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item2.StringTempResult)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "editOrderCSV", new { id = item2.orderId }) |
+                    @Html.ActionLink("Delete", "deleteOrder", new { id = item2.orderId })
+                </td>
+                <td>
+                    <input type="hidden" name="orderId" value=" @item2.orderId" />
+                <td>
+            </tr>
                     }
                 }
 

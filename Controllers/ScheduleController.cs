@@ -11,6 +11,15 @@ namespace Scheduler.Controllers
 {
     public class ScheduleController : Controller
     {
+        public JsonResult SavePriority(string[] order)
+        {
+            //string[] data = orden.Split(',');
+
+
+            return Json("Saved!");
+        }
+
+
         public ActionResult ViewSchedules()
         {
             //ViewBag.Message = "Order List";
@@ -51,6 +60,8 @@ namespace Scheduler.Controllers
 
                 linePartSchedule.partName = PartController.getPartName(row.partId);
 
+                string Ordername = OrdersController.getOrderByIdReturnName(linePartSchedule.schedule.orderId);
+                linePartSchedule.orderName = Ordername;
 
                 scheduleViewModel.Add(linePartSchedule);
 
@@ -136,9 +147,19 @@ namespace Scheduler.Controllers
                     Line line = new Line { lineId = lines[a].lineId };
 
 
-                    lineExistInSchedule = existingScheduleList.Exists(x => x.lineId == line.lineId);
-                    if (lineExistInSchedule == true)
+                    // lineExistInSchedule = existingScheduleList.Exists(x => x.lineId == line.lineId);
+                    var templine = existingScheduleList.FirstOrDefault(p => p.lineId == line.lineId);
+
+                    if (templine != null)
+                    {
+
+                        /* if exist , check smt startdate is Not later then current DT, if not set as current DT+1
+                        if (templine.smtStart <= DateTime.Now)
+                        {
+                            existingScheduleList.FirstOrDefault(p => p.lineId == line.lineId).smtStart = DateTime.Now.AddHours(1);
+                        }*/
                         continue;
+                    }
                     else
                         existingScheduleList.Add(new Schedule
                         {
@@ -181,6 +202,11 @@ namespace Scheduler.Controllers
                     //get line SMTStartDate + lineSMTTime
 
                     Schedule currentLineFirstSchedule = existingScheduleList.Find(x => x.lineId == MT.lineId);
+
+                    if (currentLineFirstSchedule.smtStart <= DateTime.Now)
+                    {
+                        currentLineFirstSchedule.smtStart = DateTime.Now.AddHours(1);
+                    }
 
 
                     DateTime linePredictedSMTEnd = currentLineFirstSchedule.smtStart.AddSeconds(lineSMTTime);
@@ -227,168 +253,182 @@ namespace Scheduler.Controllers
             // check if order exist
             // check if part exist
 
+            try
+            {
+
+                Schedule schedule = new Schedule();
+                schedule.orderId = order.orderId;
+                schedule.partId = order.partId;
+
+                //BackEnd
+                //Get BackendId, Backend date
+                DateTime BEdate = calculateBEDate(order.partId, order.quantity, order.shipDate);
+                schedule.BEDate = BEdate;
+                schedule.backendId = getBEId(order.partId);
+                schedule.earlistStartDate = order.lastMaterialDate.AddDays(1);
+
+                // calculate Lasteststartdate. BEdate - time needed for production here 
+                //1. check and get the line which is the "most free"
+
+                /*
+               int lineId = -1;
+               int Index = 0;
+
+               List<Schedule> NextfreeLine = new List<Schedule>();
+               NextfreeLine = GetAvailableLines(); // returns schedule object with next available lineId and smtEnd in order of most available line first
 
 
-            Schedule schedule = new Schedule();
-            schedule.orderId = order.orderId;
-            schedule.partId = order.partId;
 
-            //BackEnd
-            //Get BackendId, Backend date
-            DateTime BEdate = calculateBEDate(order.partId, order.quantity, order.shipDate);
-            schedule.BEDate = BEdate;
-            schedule.backendId = getBEId(order.partId);
-            schedule.earlistStartDate = order.lastMaterialDate.AddDays(1);
-
-            // calculate Lasteststartdate. BEdate - time needed for production here 
-            //1. check and get the line which is the "most free"
-
-            /*
-           int lineId = -1;
-           int Index = 0;
-
-           List<Schedule> NextfreeLine = new List<Schedule>();
-           NextfreeLine = GetAvailableLines(); // returns schedule object with next available lineId and smtEnd in order of most available line first
-
-
-
-           //Calculate BE Time here.
-           ManufacturingTime partManufacturingTime = new ManufacturingTime();
-           for (int i = 0; i < NextfreeLine.Count; i++)
-           {
-               // get first available lines lineId
-               lineId = NextfreeLine[i].lineId;
-
-
-               var manufacturingTimeData = manufacturingTimeProcessor.GetManufacturingTime(lineId, order.partId);
-
-
-               // check to ensure lineId and partID combination exist. if it dosent exist, check another line/part combination.
-               // if there is result in manufacturingTimeData , (line and part combo exist) break from loop.
-               if (manufacturingTimeData != null)
+               //Calculate BE Time here.
+               ManufacturingTime partManufacturingTime = new ManufacturingTime();
+               for (int i = 0; i < NextfreeLine.Count; i++)
                {
+                   // get first available lines lineId
+                   lineId = NextfreeLine[i].lineId;
 
-                   foreach (var row in manufacturingTimeData)
+
+                   var manufacturingTimeData = manufacturingTimeProcessor.GetManufacturingTime(lineId, order.partId);
+
+
+                   // check to ensure lineId and partID combination exist. if it dosent exist, check another line/part combination.
+                   // if there is result in manufacturingTimeData , (line and part combo exist) break from loop.
+                   if (manufacturingTimeData != null)
                    {
-                       partManufacturingTime.lineId = row.lineId;
-                       partManufacturingTime.PartId = row.partId;
-                       partManufacturingTime.manufacturingTIme = row.manufacturingTime;
 
+                       foreach (var row in manufacturingTimeData)
+                       {
+                           partManufacturingTime.lineId = row.lineId;
+                           partManufacturingTime.PartId = row.partId;
+                           partManufacturingTime.manufacturingTIme = row.manufacturingTime;
+
+                       }
+                       schedule.earlistStartDate = order.lastMaterialDate.AddSeconds(1);
+                       //Assuming 1 hour changeover Time.
+                       schedule.plannedStartDate = NextfreeLine[i].smtEnd.AddHours(1);
+                       schedule.lineId = lineId;
+                       break;
                    }
-                   schedule.earlistStartDate = order.lastMaterialDate.AddSeconds(1);
-                   //Assuming 1 hour changeover Time.
-                   schedule.plannedStartDate = NextfreeLine[i].smtEnd.AddHours(1);
-                   schedule.lineId = lineId;
-                   break;
+
+
                }
+               */
+
+                //Calculate BE Time here.
 
 
-           }
-           */
+                var data = ScheduleProcessor.LoadAvailableLineList(order.partId);
 
-            //Calculate BE Time here.
-
-
-            var data = ScheduleProcessor.LoadAvailableLineList(order.partId);
-
-            if (data == null | data.Count.Equals(0))
-            {
-
-                // check if partId has any ManufacturingTime info
-                var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
-
-
-                if (getLineData == null | getLineData.Count.Equals(0))
+                if (data == null | data.Count.Equals(0))
                 {
-                    // no line information for that part
-                    return -1;
+
+                    // check if partId has any ManufacturingTime info
+                    var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
+
+
+                    if (getLineData == null | getLineData.Count.Equals(0))
+                    {
+                        // no line information for that part
+                        return -1;
+                    }
+
+                    schedule.lineId = getLineData[0].lineId;
+                    schedule.plannedStartDate = schedule.earlistStartDate.AddSeconds(1);
+
                 }
-
-                schedule.lineId = getLineData[0].lineId;
-                schedule.plannedStartDate = schedule.earlistStartDate.AddSeconds(1);
-
-            }
-            else
-            {
-
-                //check if SMTend date is more then current date 
-                if (data[0].SMTEnd <= DateTime.Now)
+                else
                 {
-                    // SMTEnd is lesser then today , set planneStartDate as today + 1 hr
+
+                    //check if SMTend date is more then current date 
+                    if (data[0].SMTEnd <= DateTime.Now)
+                    {
+                        // SMTEnd is lesser then today , set planneStartDate as today + 1 hr
+                        schedule.lineId = data[0].lineId;
+                        schedule.plannedStartDate = DateTime.Now.AddHours(1);
+                    }
+
+
+
                     schedule.lineId = data[0].lineId;
-                    schedule.plannedStartDate = DateTime.Now.AddHours(1);
+
+                    // Planned startdate = earliest start date or SMendDate. 
+                    schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+
                 }
 
 
 
-                schedule.lineId = data[0].lineId;
+                var manufacturingTimeData = manufacturingTimeProcessor.GetManufacturingTime(schedule.lineId, order.partId);
 
-                // Planned startdate = earliest start date or SMendDate. 
-                schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+                ManufacturingTime partManufacturingTime = new ManufacturingTime();
+
+                foreach (var row in manufacturingTimeData)
+                {
+                    partManufacturingTime.lineId = row.lineId;
+                    partManufacturingTime.PartId = row.partId;
+                    partManufacturingTime.manufacturingTIme = row.manufacturingTime;
+
+                }
+                // IF manufacturingTimeData cant be found on any line. return error
+                if (manufacturingTimeData == null || manufacturingTimeData[0].Equals(null))
+                {
+                    //display error theres not such line/part combo.
+                    //string errorMsg = "Manufacturing Time Data does not exist for this part. Enter part/line data in Line page or change part.";
+
+                    return 0;
+                }
+
+                //calcualte time for SMT process here
+                int totalRunningTime = calculateTotalSMTTIme(partManufacturingTime.manufacturingTIme, order.quantity);
+                schedule.latestStartDate = schedule.BEDate.AddSeconds(-totalRunningTime);
+
+
+
+
+
+                //SMT StartDate 
+                schedule.smtStart = schedule.plannedStartDate;
+
+
+
+                schedule.smtEnd = schedule.smtStart.AddSeconds(totalRunningTime);
+
+                //Add to DB here.
+                /*
+              CultureInfo provider = CultureInfo.InvariantCulture;
+              System.Globalization.DateTimeStyles style = DateTimeStyles.None;
+              DateTime dt1;
+              DateTime.TryParseExact(schedule.BEDate.ToString(), "yyyy-MM-dd HH:mm:ss", provider, style, out dt1);
+
+
+
+              //format string to DB format
+
+              schedule.BEDate = DateTime.ParseExact(schedule.BEDate.ToString(), "dd/MM/yy hh:mm tt", null);
+              schedule.earlistStartDate = DateTime.ParseExact(schedule.earlistStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
+              schedule.plannedStartDate = DateTime.ParseExact(schedule.plannedStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
+              schedule.latestStartDate = DateTime.ParseExact(schedule.latestStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
+              schedule.smtStart = DateTime.ParseExact(schedule.smtStart.ToString(), "dd/MM/yy hh:mm tt", null);
+              schedule.smtEnd = DateTime.ParseExact(schedule.smtEnd.ToString(), "dd/MM/yy hh:mm tt", null);
+              */
+
+
+                int result = ScheduleProcessor.CreateSchedule(schedule.orderId, schedule.partId, schedule.lineId, schedule.backendId, schedule.BEDate, schedule.earlistStartDate, schedule.plannedStartDate, schedule.latestStartDate, schedule.smtStart, schedule.smtEnd);
+                if (result == 1)
+                {
+                    //set order scheduled
+                    OrdersController.setOrderscheduled(schedule.orderId);
+
+                }
+
+                return result;
 
             }
 
-
-
-            var manufacturingTimeData = manufacturingTimeProcessor.GetManufacturingTime(schedule.lineId, order.partId);
-
-            ManufacturingTime partManufacturingTime = new ManufacturingTime();
-
-            foreach (var row in manufacturingTimeData)
+            catch (Exception ex)
             {
-                partManufacturingTime.lineId = row.lineId;
-                partManufacturingTime.PartId = row.partId;
-                partManufacturingTime.manufacturingTIme = row.manufacturingTime;
-
-            }
-            // IF manufacturingTimeData cant be found on any line. return error
-            if (manufacturingTimeData == null || manufacturingTimeData[0].Equals(null))
-            {
-                //display error theres not such line/part combo.
-                //string errorMsg = "Manufacturing Time Data does not exist for this part. Enter part/line data in Line page or change part.";
-
                 return 0;
+
             }
-
-            //calcualte time for SMT process here
-            int totalRunningTime = calculateTotalSMTTIme(partManufacturingTime.manufacturingTIme, order.quantity);
-            schedule.latestStartDate = schedule.BEDate.AddSeconds(-totalRunningTime);
-
-
-
-
-
-            //SMT StartDate 
-            schedule.smtStart = schedule.plannedStartDate;
-
-
-
-            schedule.smtEnd = schedule.smtStart.AddSeconds(totalRunningTime);
-
-            //Add to DB here.
-            /*
-          CultureInfo provider = CultureInfo.InvariantCulture;
-          System.Globalization.DateTimeStyles style = DateTimeStyles.None;
-          DateTime dt1;
-          DateTime.TryParseExact(schedule.BEDate.ToString(), "yyyy-MM-dd HH:mm:ss", provider, style, out dt1);
-
-
-
-          //format string to DB format
-
-          schedule.BEDate = DateTime.ParseExact(schedule.BEDate.ToString(), "dd/MM/yy hh:mm tt", null);
-          schedule.earlistStartDate = DateTime.ParseExact(schedule.earlistStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
-          schedule.plannedStartDate = DateTime.ParseExact(schedule.plannedStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
-          schedule.latestStartDate = DateTime.ParseExact(schedule.latestStartDate.ToString(), "dd/MM/yy hh:mm tt", null);
-          schedule.smtStart = DateTime.ParseExact(schedule.smtStart.ToString(), "dd/MM/yy hh:mm tt", null);
-          schedule.smtEnd = DateTime.ParseExact(schedule.smtEnd.ToString(), "dd/MM/yy hh:mm tt", null);
-          */
-
-
-            int result = ScheduleProcessor.CreateSchedule(schedule.orderId, schedule.partId, schedule.lineId, schedule.backendId, schedule.BEDate, schedule.earlistStartDate, schedule.plannedStartDate, schedule.latestStartDate, schedule.smtStart, schedule.smtEnd);
-
-
-            return result;
 
 
         }

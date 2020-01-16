@@ -445,13 +445,32 @@ namespace Scheduler.Controllers
                 orders.lastMaterialDate = row.lastMaterialDate;
                 orders.shipDate = row.shipDate;
                 orders.quantity = row.quantity;
+                orders.priority = row.priority;
+                orders.status = row.status;
             };
 
 
             return orders;
         }
 
+        public static string getOrderByIdReturnName(int orderId)
+        {
 
+            var data = OrderProcessor.LoadOrder(orderId);
+
+            Order orders = new Order();
+
+            foreach (var row in data)
+            {
+
+
+                orders.projectName = row.projectName;
+
+            };
+
+
+            return orders.projectName;
+        }
 
 
         // POST: Orders
@@ -630,6 +649,8 @@ namespace Scheduler.Controllers
                 int deleted = OrderProcessor.DeleteOrder(
                     id
                     );
+
+
                 if (deleted == 1)
                     TempData["newOrderResult"] = 2;
                 else
@@ -735,7 +756,8 @@ namespace Scheduler.Controllers
         [HttpPost]
         public ActionResult importOrderCSV(HttpPostedFileBase excelfile)
         {
-
+            //  try
+            //  {
             if (excelfile == null || excelfile.ContentLength == 0)
             {
                 //ViewBag.Error = "Please select a excel file";
@@ -745,6 +767,7 @@ namespace Scheduler.Controllers
             }
             else
             {
+
                 if (excelfile.FileName.EndsWith("xls") || excelfile.FileName.EndsWith("xlsx"))
                 {
                     string path = Server.MapPath("~/Content/" + excelfile.FileName);
@@ -799,6 +822,9 @@ namespace Scheduler.Controllers
                         order.partId = int.Parse(((Excel.Range)range.Cells[row, 2]).Text);
                         order.projectName = ((Excel.Range)range.Cells[row, 3]).Text;
                         order.lastMaterialDate = DateTime.Parse(((Excel.Range)range.Cells[row, 4]).Text);
+
+
+
                         order.shipDate = DateTime.Parse(((Excel.Range)range.Cells[row, 5]).Text);
                         order.quantity = int.Parse(((Excel.Range)range.Cells[row, 6]).Text);
 
@@ -917,6 +943,13 @@ namespace Scheduler.Controllers
 
                 }
             }
+            // }
+            //   catch (Exception ex)
+            //  {
+            //     TempData["ErrorCSV"] = ex;
+
+            //      return RedirectToAction("importOrderCSV");
+            //   }
 
 
         }
@@ -931,37 +964,66 @@ namespace Scheduler.Controllers
         }
 
         [HttpPost, ActionName("reviewOrderCSVPost")]
-        public ActionResult reviewOrderCSVPost()
+        public ActionResult reviewOrderCSVPost(List<int> orderId)
         {
 
+            if (orderId == null || orderId.Count == 0)
+            {
+                List<Order> orders = new List<Order>();
+                var data = OrderProcessor.LoadOrder("unscheduled");
 
+                foreach (var row in data)
+                {
+                    orders.Add(new Order
+                    {
+                        orderId = row.orderId,
+                        partId = row.partId,
+                        projectName = row.projectName,
+                        lastMaterialDate = row.lastMaterialDate,
+                        shipDate = row.shipDate,
+                        quantity = row.quantity,
+                        status = row.status,
+                        priority = row.priority
+                    });
+                }
+
+                return View(orders);
+            }
+
+            // List<int> ordersList = orderId;
             // display vieworder page with status (unscheduled)
             // return RedirectToAction("ViewOrders", new { status = "unscheduled" });
 
 
-            var data = OrderProcessor.LoadOrder("unscheduled");
-
-            List<Order> orders = new List<Order>();
-
-            foreach (var row in data)
+            // var data = OrderProcessor.LoadOrder("unscheduled");
+            else
             {
-                orders.Add(new Order
+                List<Order> orders = new List<Order>();
+
+                for (int i = 0; i < orderId.Count; i++)
                 {
-                    orderId = row.orderId,
-                    partId = row.partId,
-                    projectName = row.projectName,
-                    lastMaterialDate = row.lastMaterialDate,
-                    shipDate = row.shipDate,
-                    quantity = row.quantity,
-                    status = row.status,
-                    priority = row.priority
-                });
+                    var data = OrderProcessor.LoadOrder(orderId[i]);
+
+                    foreach (var row in data)
+                    {
+                        orders.Add(new Order
+                        {
+                            orderId = row.orderId,
+                            partId = row.partId,
+                            projectName = row.projectName,
+                            lastMaterialDate = row.lastMaterialDate,
+                            shipDate = row.shipDate,
+                            quantity = row.quantity,
+                            status = row.status,
+                            priority = row.priority
+                        });
+                    }
+                }
+                //   OrderDetail ObjorderDetail = new OrderDetail();
+                //  ObjorderDetail.OrderDetails = orders;
+
+                return View(orders);
             }
-
-            //   OrderDetail ObjorderDetail = new OrderDetail();
-            //  ObjorderDetail.OrderDetails = orders;
-
-            return View(orders);
         }
 
 
@@ -969,58 +1031,101 @@ namespace Scheduler.Controllers
         public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status)
         {
 
-
-
-            //interate though the array
+            List<Order> listOrders = new List<Order>();
+            List<Order> tempListOrders = new List<Order>();
 
             for (int i = 0; i < status.Length; i++)
             {
                 //check status , if status = unschedule , dont schedule 
-
-                if (status.Equals("unscheduled"))
+                Order order = new Order();
+                order = getOrderById(order.orderId);
+                if (status[i].Equals("unscheduled"))
                 {
                     // dont schedule here
+
+                    order.intTempResult = -1;
+                    order.StringTempResult = "Unscheduled";
+
+                    listOrders.Add(order);
 
                 }
                 else
                 {
-                    Order order = getOrderById(orderId[i]);
-                    ScheduleController.scheduleOrder(order);
+                    tempListOrders.Add(order);
+
+                }
+            }
+
+            //sort order by shipping date
+            //tempListOrders = tempListOrders.OrderByDescending(o => o.shipDate).ToList();
+
+            tempListOrders.Sort((x, y) => x.shipDate.CompareTo(y.shipDate));
+
+            for (int i = 0; i < tempListOrders.Count; i++)
+            {
+                //check status , if status = unschedule , dont schedule 
+                Order order = tempListOrders[i];
 
 
+
+                int scheduled = ScheduleController.scheduleOrder(order);
+                //int scheduled = 0;
+                if (scheduled == 1)
+                {
+                    order.intTempResult = 1;
+                    order.StringTempResult = "Scheduled";
+                }
+                else
+                {
+                    order.intTempResult = 0;
+                    order.StringTempResult = "An exception has occured, scheduling is aborted.Please try again.";
                 }
 
 
-
+                listOrders.Add(order);
 
             }
 
-            // display vieworder page with status (unscheduled)
-            // return RedirectToAction("ViewOrders", new { status = "unscheduled" });
 
 
-            var data = OrderProcessor.LoadOrder("unscheduled");
 
-            List<Order> orders1 = new List<Order>();
 
-            foreach (var row in data)
-            {
-                orders1.Add(new Order
-                {
-                    orderId = row.orderId,
-                    partId = row.partId,
-                    projectName = row.projectName,
-                    lastMaterialDate = row.lastMaterialDate,
-                    shipDate = row.shipDate,
-                    quantity = row.quantity,
-                    status = row.status,
-                    priority = row.priority
-                });
-            }
 
-            return View();
+            TempData["Orders"] = listOrders;
+
+            return RedirectToAction("scheduledResults");
         }
 
+
+
+        public ActionResult scheduledResults(List<Order> orders)
+        {
+
+            if (orders == null || orders.Count == 0)
+                orders = (List<Order>)TempData["Orders"];
+
+
+            return View(orders);
+        }
+
+
+        public JsonResult InsertCustomers(List<Order> orders)
+        {
+
+
+            JsonResult result = null;
+            return result;
+        }
+
+
+        public static void setOrderscheduled(int orderId)
+        {
+
+            var data = OrderProcessor.setOrderSchedule(orderId, "scheduled");
+
+
+
+        }
 
 
 
