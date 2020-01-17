@@ -1038,7 +1038,7 @@ namespace Scheduler.Controllers
             {
                 //check status , if status = unschedule , dont schedule 
                 Order order = new Order();
-                order = getOrderById(order.orderId);
+                order = getOrderById(orderId[i]);
                 if (status[i].Equals("unscheduled"))
                 {
                     // dont schedule here
