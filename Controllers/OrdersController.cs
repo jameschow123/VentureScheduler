@@ -983,7 +983,8 @@ namespace Scheduler.Controllers
                         shipDate = row.shipDate,
                         quantity = row.quantity,
                         status = row.status,
-                        priority = row.priority
+                        priority = row.priority,
+                        statusBool = true
                     });
                 }
 
@@ -1015,7 +1016,11 @@ namespace Scheduler.Controllers
                             shipDate = row.shipDate,
                             quantity = row.quantity,
                             status = row.status,
-                            priority = row.priority
+                            priority = row.priority,
+                            statusBool = true
+
+
+
                         });
                     }
                 }
@@ -1028,7 +1033,7 @@ namespace Scheduler.Controllers
 
 
         [HttpPost, ActionName("reviewOrderCSVSchedule")]
-        public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status)
+        public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status, bool[] statusBool)
         {
 
             List<Order> listOrders = new List<Order>();
@@ -1039,7 +1044,7 @@ namespace Scheduler.Controllers
                 //check status , if status = unschedule , dont schedule 
                 Order order = new Order();
                 order = getOrderById(orderId[i]);
-                if (status[i].Equals("unscheduled"))
+                if (status[i].Equals("false"))
                 {
                     // dont schedule here
 

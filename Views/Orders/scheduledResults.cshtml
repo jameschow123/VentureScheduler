@@ -14,46 +14,46 @@
 
         <h2>Error Results:</h2>
 
+        @**
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.orderId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partId)
+                    </th>
+                    <th>
+                        @Html.DisplayName("Message")
+                    </th>
 
-        <table class="table">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.orderId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.partId)
-                </th>
-                <th>
-                    @Html.DisplayName("Message")
-                </th>
+                    <th></th>
+                </tr>
 
-                <th></th>
-            </tr>
-
-            @foreach (var item in Model)
-            {
-                if (item.intTempResult == 0 || item.intTempResult == -1)
+                @foreach (var item in Model)
                 {
-                    <tr>
-                        <th>
-                            @Html.DisplayFor(modelItem => item.orderId)
-                        </th>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.partId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.StringTempResult)
-                        </td>
+                    if (item.intTempResult == 0 || item.intTempResult == -1)
+                    {
+                        <tr>
+                            <th>
+                                @Html.DisplayFor(modelItem => item.orderId)
+                            </th>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.partId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StringTempResult)
+                            </td>
 
 
-                    </tr>
+                        </tr>
+                    }
                 }
-            }
 
-        </table>
+            </table>
 
-        <br />
-
+            <br />
+            **@
 
         <h2>Successfully added</h2>
 

@@ -7,6 +7,12 @@
 
 <h2>Review orders</h2>
 <h4>Please review and confirm orders to be scheduled</h4>
+
+
+<div class="form-group">
+    <input type="hidden" id="btnSelectAll_hidden" value="true">
+    <input type="button" id="btnSelectAll" value="Select/Deselect all schedule" class="btn btn-primary">
+</div>
 @using (Html.BeginForm("reviewOrderCSVSchedule", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <table id="tblOrders" class="table">
@@ -78,9 +84,19 @@
                                 });
                             }
 
-                            @Html.DropDownListFor(modelItem => item.status, new SelectList(listItems, "Value", "Text"), new { @id = "status_" + item.orderId, @class = "status", @onchange = "javascript:callChangefunc(this.id,this.value)" })
+                            @**    @Html.DropDownListFor(modelItem => item.status, new SelectList(listItems, "Value", "Text"), new { @id = "status_" + item.orderId, @class = "status", @onchange = "javascript:callChangefunc(this.id,this.value)" }) **@
+
+
+
+
+                            @Html.CheckBoxFor(modelItem => item.statusBool, new { @id = "status_" + item.orderId, @class = "status", @onchange = "javascript:callChangefuncBool(this.id,this.value,this.checked)" })
+
                             @Html.HiddenFor(modelItem => item.StringTempResult)
-                            <input type="hidden" name="status" id="hidden_@item.orderId" value=@item.status />
+
+
+
+
+                            <input type="hidden" class="hidden_status" name="status" id="hidden_@item.orderId" value=true />
 
 
 
@@ -112,6 +128,28 @@
 <script type="text/javascript">
 
 
+    function callChangefuncBool(id, val, checked) {
+
+
+
+        console.log(checked)
+
+        console.log("callChangefuncBool called")
+        var arr = id.split('_');
+        currentId = arr[1];
+
+        console.log(currentId)
+
+
+        //set hidden field value
+        var s = document.getElementById("hidden_" + currentId);
+        //console.log(s.val)
+
+        s.value = checked;
+        console.log(s.value)
+        console.log(s)
+    };
+
     function callChangefunc(id, val) {
 
 
@@ -134,9 +172,38 @@
     }
 
 
+
+
     $(function () {
         $("#status").on("change", function () {
             $("#SelectedvendorText").val($(this).text());
+        });
+    });
+
+    $(function () {
+        $("#btnSelectAll").on("click", function () {
+            console.log("btnSelectAll activated")
+            debugger
+            var allSelected = document.getElementById("btnSelectAll_hidden");
+            var allSelectedValue = allSelected.value;
+            console.log(allSelected.value);
+
+            if (allSelectedValue == "true") {
+                allSelected.value = "false"
+                var test = document.getElementsByClassName("status");
+                console.log(test);
+                $(".status").prop("checked", false);
+                $(".hidden_status").prop("value", false);
+
+            }
+            else {
+                allSelected.value = "true"
+
+                $(".status").checked = true;
+                $(".hidden_status").value = true;
+            }
+
+
         });
     });
 

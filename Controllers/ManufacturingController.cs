@@ -661,7 +661,7 @@ namespace Scheduler.Controllers
                         Line line = new Line();
 
                         //check if part exist. if exist skip
-                        // part.partId = int.Parse(((Excel.Range)range.Cells[row, 1]).Text);
+                        part.partId = int.Parse(((Excel.Range)range.Cells[row, 1]).Text);
                         part.partName = ((Excel.Range)range.Cells[row, 2]).Text;
                         string side = ((Excel.Range)range.Cells[row, 3]).Text;
                         side = Regex.Replace(side, @"\s", "");

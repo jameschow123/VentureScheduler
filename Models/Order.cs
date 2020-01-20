@@ -42,7 +42,7 @@ namespace Scheduler.Models
         [Range(1, 3, ErrorMessage = "Please enter a valid priority from 1(highest)-3(normal)")]
         public int priority { get; set; }
 
-
+        public bool statusBool { get; set; }
         public int intTempResult { get; set; }
         public string StringTempResult { get; set; }
 
