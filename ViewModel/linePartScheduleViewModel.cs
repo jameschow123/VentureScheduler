@@ -37,5 +37,8 @@ namespace Scheduler.ViewModel
         public string orderName { get; set; }
 
         public string error { get; set; }
+
+        public string status { get; set; }
+
     }
 }

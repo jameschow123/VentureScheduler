@@ -42,41 +42,49 @@
             @Html.DisplayNameFor(model => model.quantity)
         </th>
 
+
+        <th>
+            @Html.DisplayNameFor(model => model.status)
+        </th>
+
     </tr>
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.orderId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.partId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.projectName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.lastMaterialDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.shipDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.quantity)
-            </td>
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.orderId)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.partId)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.projectName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.lastMaterialDate)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.shipDate)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.quantity)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.status)
+    </td>
 
 
-
-            <td>
-                @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
-                @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId })
-            </td>
-        </tr>
+    <td>
+        @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
+        @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId })
+    </td>
+</tr>
     }
 
 
 </table>
+
 
 
 

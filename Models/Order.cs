@@ -20,13 +20,15 @@ namespace Scheduler.Models
         [Display(Name = "Product ID")]
         public int partId { get; set; }
         [Required(ErrorMessage = "Project Name is required!")]
-        [Display(Name = "Project Name")]
-        [StringLength(100, MinimumLength = 5, ErrorMessage = "Please enter a project name between 5-100 characters")]
+        [Display(Name = "Work order no.")]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "Please enter a Work order no. between 5-100 characters")]
         public string projectName { get; set; }
         [Required(ErrorMessage = "Order date is required!")]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Last Material date")]
         [DataType(DataType.DateTime)]
         public DateTime lastMaterialDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Shipment Date")]
         [Required(ErrorMessage = "Ship Date is required!")]
         [DataType(DataType.DateTime)]

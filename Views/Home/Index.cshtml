@@ -2,13 +2,80 @@
     ViewBag.Title = "Home Page";
 }
 
-@**<div class="jumbotron">
-   
-</div>**@
+<div class="jumbotron">
+    @using (Html.BeginForm("Index", "Schedule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
 
-<div class="row" style="width:initial; height:initial;">
-    <iframe class="embed-responsive-item" src="http://127.0.0.1:5002/getSchedule?from=1576569507793&to=1579161507794&color=Status&ref=Yes&search=" width="1100" height="550"   frameborder="0" align="middle" allowfullscreen="allowfullscreen"></iframe>
+        <div class="form-horizontal">
+
+
+            <div class="form-group">
+                @Html.Label("Start date", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="date" name="startDate" id="startDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("End date", htmlAttributes: new { @class = "control-label col-md-2" })
+
+                <div class="col-md-10">
+                    <input type="date" name="endDate" id="endDate" class="form-control" />
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn btn-default" />
+            </div>
+        </div>
+    }
+
+
+
+
+
+
+    @if (TempData["index"] == null)
+    {
+        <div class="row" style="width:initial; height:initial;">
+            <iframe class="embed-responsive-item" src="http://127.0.0.1:5002/getSchedule?from=1577808000000&to=1609344000000&color=Status&ref=Yes&search=" width="1050" height="500" frameborder="0" align="middle" allowfullscreen="allowfullscreen"></iframe>
+        </div>
+    }
+    else
+    {
+        <div class="row" style="width:initial; height:initial;">
+
+            <iframe class="embed-responsive-item" src="@TempData["index"].ToString()" width="1050" height="500" align="middle" frameborder="0"  allowfullscreen="allowfullscreen"></iframe>
+        </div>
+
+    }
+
 
 
 
 </div>
+
+    </div>
+
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+
+
+        $('.datetimepicker').datetimepicker({
+
+            format: 'DD/MM/YYYY HH:mm',
+
+
+        });
+    });
+
+</script>

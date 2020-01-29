@@ -110,6 +110,35 @@ namespace Scheduler.Controllers
             return RedirectToAction("ViewSchedules");
         }
 
+        public static long ToUnixTime(DateTime date)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            return Convert.ToInt64((date.ToUniversalTime() - epoch).TotalSeconds);
+        }
+
+
+        [HttpPost]
+        public ActionResult Index(DateTime startDate, DateTime endDate)
+        {
+
+
+            DateTime startDateUTC = TimeZoneInfo.ConvertTimeToUtc(startDate);
+            DateTime endDateUTC = TimeZoneInfo.ConvertTimeToUtc(endDate);
+
+            long startDateUTC2 = ToUnixTime(startDate) * 1000;
+            long endDateUTC2 = ToUnixTime(endDate) * 1000;
+
+
+
+
+            //return temp var with datetime format in ISO.
+
+            TempData["index"] = "http://127.0.0.1:5002/getSchedule?from=" + startDateUTC2 + "&to=" + endDateUTC2 + "&color=Status&ref=Yes&search=";
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
         //methods get the 
         public static int reScheduleOrder(List<Order> orders)
         {
@@ -446,6 +475,24 @@ namespace Scheduler.Controllers
 
             }
 
+
+            if (BEId == -1)
+            {
+                // insert BE for this part default time as 0
+                int created = BackendProcessor.CreateBackendProcess(partId);
+                var partData = BackendProcessor.getBackendId(partId);
+
+                foreach (var row in partData)
+                {
+
+                    BEId = row.backendId;
+
+                }
+
+
+
+            }
+
             return BEId;
         }
 
@@ -612,6 +659,175 @@ namespace Scheduler.Controllers
             else
                 return time2;
         }
+
+
+        public static int updateSmtStartDate(int orderId, DateTime smtStart)
+        {
+
+            var data = ScheduleProcessor.updateScheduleSmtStartDate(orderId, smtStart);
+
+
+            return data;
+        }
+
+        public static int updateSmtEndDate(int orderId, DateTime smtEnd)
+        {
+            var data = ScheduleProcessor.updateScheduleSmtEndDate(orderId, smtEnd);
+
+
+            return data;
+        }
+
+
+        /// <summary>
+        /// Show Schedule details
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="orderName"></param>
+        /// <param name="partName"></param>
+        /// <param name="lineName"></param>
+        /// <param name="smtStart"></param>
+        /// <param name="smtEnd"></param>
+        /// <returns></returns>
+        public ActionResult scheduleDetails(int Id, string orderName, string partName, string lineName, int lineId, DateTime smtStart, DateTime smtEnd)
+        {
+
+
+            string status = "";
+            status = OrdersController.getOrderByID(Id);
+
+
+            linePartScheduleViewModel order = new linePartScheduleViewModel() { orderName = orderName, partName = partName, lineName = lineName, selectedLine = lineId, status = status, schedule = new Schedule() { orderId = Id, smtStart = smtStart, smtEnd = smtEnd } };
+
+
+
+            return View(order);
+        }
+
+        /// <summary>
+        /// Start of Smt process, change order.status = processing and schedule.smtStart = Datetime.Now
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult smtStart(int Id, string orderName, string partName, string lineName, int lineId, DateTime smtStart, DateTime smtEnd, string status)
+        {
+
+
+
+            // set order status processing.
+            int result1 = OrdersController.setOrderStatusProcessing(Id);
+            // update SMT start date to current DT.
+            int result2 = updateSmtStartDate(Id, DateTime.Now);
+
+            linePartScheduleViewModel order = new linePartScheduleViewModel() { orderName = orderName, partName = partName, lineName = lineName, selectedLine = lineId, status = status, schedule = new Schedule() { orderId = Id, smtStart = smtStart, smtEnd = smtEnd } };
+
+            TempData["smtStartResults"] = result1 + result2;
+
+            return View(order);
+        }
+
+        /// <summary>
+        /// Start of Smt process, change order.status = processing and schedule.smtEnd = Datetime.Now
+        /// Update subsequent jobs smtStartDate based on current job SMT end
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public ActionResult smtEnd(int Id, string orderName, string partName, string lineName, int lineId, DateTime smtStart, DateTime smtEnd, string status)
+        {
+
+
+
+            // set order status processing.
+            int result1 = OrdersController.setOrderStatusCompleted(Id);
+            // update SMT start date to current DT.
+            int result2 = updateSmtEndDate(Id, DateTime.Now);
+            // update subsequent jobs
+
+            updateSubsequentJobs(Id, smtEnd, lineId);
+
+            linePartScheduleViewModel order = new linePartScheduleViewModel() { orderName = orderName, partName = partName, lineName = lineName, selectedLine = lineId, status = status, schedule = new Schedule() { orderId = Id, smtStart = smtStart, smtEnd = smtEnd } };
+
+            TempData["smtStartResults"] = result1 + result2;
+
+            return View(order);
+        }
+
+
+        public static void updateSubsequentJobs(int orderId, DateTime smtEnd, int lineId)
+        {
+
+            //select all jobs after current jobs returned in order of smtstartDates
+            List<Schedule> scheduleList = getSubsequentJobs(lineId, smtEnd);
+
+
+
+            for (int i = 0; i < scheduleList.Count; i++)
+            {
+                // get scheduled jobs and update SMTstart and smt
+
+                Schedule schedule = scheduleList[i];
+
+                schedule.smtStart = smtEnd.AddMinutes(60);
+                var getLineData = manufacturingTimeProcessor.GetManufacturingTime(lineId, schedule.partId);
+                ManufacturingTime mt = new ManufacturingTime();
+
+                foreach (var row in getLineData)
+                {
+                    mt.manufacturingTIme = row.manufacturingTime;
+
+                }
+
+                int quantity = OrdersController.getQuantityByID(orderId);
+                int totalTime = calculateTotalSMTTIme(mt.manufacturingTIme, quantity);
+
+                schedule.smtEnd = schedule.smtStart.AddSeconds(totalTime);
+
+                int results = ScheduleProcessor.updateSchedule(schedule.orderId, lineId, schedule.smtStart, schedule.smtEnd);
+
+
+
+            }
+
+
+
+        }
+
+        public static List<Schedule> getSubsequentJobs(int lineId, DateTime smtEnd)
+        {
+
+            //select all jobs after current jobs
+            var ScheduleListData = ScheduleProcessor.LoadSubsequentSchedule(lineId, smtEnd); ;
+
+            List<Schedule> scheduleList = new List<Schedule>();
+
+            foreach (var row in ScheduleListData)
+            {
+
+                scheduleList.Add(new Schedule
+                {
+
+
+                    orderId = row.orderId,
+                    partId = row.partId,
+                    lineId = row.lineId,
+                    backendId = row.backendId,
+                    BEDate = row.BEDate,
+                    earlistStartDate = row.EarliestStartDate,
+                    plannedStartDate = row.PlannedStartDate,
+                    latestStartDate = row.LatestStartDate,
+                    smtStart = row.SMTStart,
+                    smtEnd = row.SMTEnd,
+
+
+                });
+            }
+
+            return scheduleList;
+
+
+        }
+
+
 
     }
 }

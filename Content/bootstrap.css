@@ -254,6 +254,7 @@ th {
   .table {
     border-collapse: collapse !important;
   }
+
   .table td,
   .table th {
     background-color: #fff !important;
@@ -262,6 +263,9 @@ th {
   .table-bordered td {
     border: 1px solid #ddd !important;
   }
+
+
+
 }
 @font-face {
   font-family: "Glyphicons Halflings";
@@ -2403,6 +2407,12 @@ th {
 .table .table {
   background-color: #fff;
 }
+
+    .table tr:nth-child(even) {
+        background: #f7a03eed;
+        
+    }
+
 .table-condensed > thead > tr > th,
 .table-condensed > tbody > tr > th,
 .table-condensed > tfoot > tr > th,

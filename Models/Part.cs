@@ -10,8 +10,8 @@ namespace Scheduler.Models
     {
         
         public int partId { get; set; }
-        [Display(Name = "Part Name")]
-        [Required(ErrorMessage = "Part Name is required!")]
+        [Display(Name = "Product no.")]
+        [Required(ErrorMessage = "Product no. is required!")]
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Please enter a partName between 5-100 characters")]
         public string partName { get; set; }
         [Display(Name = "Side")]

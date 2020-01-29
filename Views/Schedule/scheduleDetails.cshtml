@@ -1,0 +1,87 @@
+﻿@model Scheduler.ViewModel.linePartScheduleViewModel
+
+@{
+    ViewBag.Title = "scheduleDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>scheduleDetails</h2>
+
+<div>
+    <h4>linePartScheduleViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.schedule.orderId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.schedule.orderId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.schedule.lineId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.selectedLine)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.lineName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.lineName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.partName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.partName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.orderName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.orderName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.schedule.smtStart)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.schedule.smtStart)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.schedule.smtEnd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.schedule.smtEnd)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+
+
+    </dl>
+</div>
+<p>
+
+    @if (Model.status == "scheduled")
+    {@Html.ActionLink("Start", "smtStart", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status }) }
+    @if (Model.status == "processing")
+    {@Html.ActionLink("End", "smtEnd", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status }) }
+    | @Html.ActionLink("Back to List", "Index")
+</p>

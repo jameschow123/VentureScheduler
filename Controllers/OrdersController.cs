@@ -346,6 +346,8 @@ namespace Scheduler.Controllers
 
             List<Order> orders = new List<Order>();
 
+
+
             foreach (var row in data)
             {
                 orders.Add(new Order
@@ -357,8 +359,12 @@ namespace Scheduler.Controllers
                     shipDate = row.shipDate,
                     quantity = row.quantity,
                     status = row.status,
-                    priority = row.priority
-                });
+                    priority = row.priority,
+
+
+
+
+                }); ;
             }
 
             foreach (var row in data)
@@ -375,6 +381,54 @@ namespace Scheduler.Controllers
             return View(orders);
         }
 
+
+
+        public static string getOrderByID(int orderId)
+        {
+
+
+            var data = OrderProcessor.LoadOrder(orderId);
+
+            Order order = new Order();
+
+
+
+            foreach (var row in data)
+            {
+
+
+                order.status = row.status;
+
+
+
+            }
+
+            return order.status;
+        }
+
+
+        public static int getQuantityByID(int orderId)
+        {
+
+
+            var data = OrderProcessor.LoadOrder(orderId);
+
+            Order order = new Order();
+
+
+
+            foreach (var row in data)
+            {
+
+
+                order.quantity = row.quantity;
+
+
+
+            }
+
+            return order.quantity;
+        }
 
 
         public ActionResult ViewOrdersFilter(string status)
@@ -1017,9 +1071,7 @@ namespace Scheduler.Controllers
                             quantity = row.quantity,
                             status = row.status,
                             priority = row.priority,
-                            statusBool = true
-
-
+                            statusBool = true,
 
                         });
                     }
@@ -1033,7 +1085,7 @@ namespace Scheduler.Controllers
 
 
         [HttpPost, ActionName("reviewOrderCSVSchedule")]
-        public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status, bool[] statusBool)
+        public ActionResult reviewOrderCSVSchedule(int[] orderId, string[] status)
         {
 
             List<Order> listOrders = new List<Order>();
@@ -1064,7 +1116,10 @@ namespace Scheduler.Controllers
             //sort order by shipping date
             //tempListOrders = tempListOrders.OrderByDescending(o => o.shipDate).ToList();
 
-            tempListOrders.Sort((x, y) => x.shipDate.CompareTo(y.shipDate));
+            //tempListOrders.Sort((x, y) => x.shipDate.CompareTo(y.shipDate));
+
+
+            tempListOrders = tempListOrders.OrderBy(x => x.lastMaterialDate).ThenBy(x => x.shipDate).ToList();
 
             for (int i = 0; i < tempListOrders.Count; i++)
             {
@@ -1133,8 +1188,22 @@ namespace Scheduler.Controllers
         }
 
 
+        public static int setOrderStatusProcessing(int orderId)
+        {
 
+            var data = OrderProcessor.setOrderSchedule(orderId, "processing");
 
+            return data;
+        }
+
+        public static int setOrderStatusCompleted(int orderId)
+        {
+
+            var data = OrderProcessor.setOrderSchedule(orderId, "completed");
+
+            return data;
+
+        }
 
     }
 }

@@ -9,10 +9,12 @@
 
 <div id="result">
 
-    @if (!Model.Equals(0))
+
+
+    @if (TempData["Orders"] != null)
     {
 
-        <h2>Error Results:</h2>
+        <h2></h2>
 
         @**
             <table class="table">

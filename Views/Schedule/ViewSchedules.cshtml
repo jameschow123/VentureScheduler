@@ -14,20 +14,20 @@
     var neworder = new Array();
     var $sortableList = $("#your-list");
 
-var sortEventHandler = function(event, ui){
-    console.log("New sort order!");
+    var sortEventHandler = function (event, ui) {
+        console.log("New sort order!");
 
 
-    var listElements = $("#tblLocations").children();
+        var listElements = $("#tblLocations").children();
 
-    console.log(listElements); // [ <li>, <li>, ... ]
-};
+        console.log(listElements); // [ <li>, <li>, ... ]
+    };
 
-       
+
 
     $(function () {
         $("#tblLocations").sortable({
-                 stop:sortEventHandler,
+            stop: sortEventHandler,
             items: 'tr:not(tr:first-child)',
             cursor: 'pointer',
             axis: 'y',
@@ -44,25 +44,25 @@ var sortEventHandler = function(event, ui){
         });
     });
 
-   $('#submitTest').submit(function () {
+    $('#submitTest').submit(function () {
 
-            console.log("submit test ")
+        console.log("submit test ")
 
-            if (neworder.length < 1) {
-                return false;
-            }
-             console.log(neworder.length)
-            $.ajax({
-                url: "/Schedule/SavePriority", type: "POST", dataType: "json",
-                data: {  'order': $( "#tblLocations" ).sortable('toArray') },
-                success: function (result) {
-                    $('#ShowResultHere').text(result);
-                    $("#submitTest").hide();//  .tex.html(result);
-                }
-            });
+        if (neworder.length < 1) {
             return false;
+        }
+        console.log(neworder.length)
+        $.ajax({
+            url: "/Schedule/SavePriority", type: "POST", dataType: "json",
+            data: { 'order': $("#tblLocations").sortable('toArray') },
+            success: function (result) {
+                $('#ShowResultHere').text(result);
+                $("#submitTest").hide();//  .tex.html(result);
+            }
         });
-    
+        return false;
+    });
+
 
 </script>
 
@@ -110,19 +110,28 @@ var sortEventHandler = function(event, ui){
 
         @foreach (var item in Model)
         {
-            <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
-            @Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id"})
+            //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
 
-            <tr >
+            <tr>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.orderName)
+                    <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+                    <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
+
+
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.partName)
+                    <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
+
                 </td>
 
                 <td>
                     @Html.DisplayFor(modelItem => item.lineName)
+                    <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
+                    <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
+
                 </td>
                 @*
                     <td>
@@ -140,13 +149,17 @@ var sortEventHandler = function(event, ui){
                 *@
                 <td>
                     @Html.DisplayFor(modelItem => item.schedule.smtStart)
+                    <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
+
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.schedule.smtEnd)
+                    <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
+
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.schedule.orderId }) |
+                    @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
                 </td>
             </tr>

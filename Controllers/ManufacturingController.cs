@@ -680,7 +680,15 @@ namespace Scheduler.Controllers
                             part.side = 2;
                         }
                         else
+                        {
                             part.side = -1;
+                            MT.error = " Error with product Information.Invalid boardside";
+                            MT.lineId = 0;
+                            ErrorListMT.Add(new PartLineManufacturingViewModel { partName = part.partName, lineName = line.lineName, manufacturingTIme = MT.manufacturingTIme, error = MT.error, selectedLine = MT.lineId });
+                            continue;
+
+
+                        }
 
                         int addPartResult = 0;
 
@@ -693,6 +701,9 @@ namespace Scheduler.Controllers
                             addPartResult = PartController.addNewPart(part);
                         }
                         */
+
+
+
 
                         bool continueCond = false;
 
@@ -707,6 +718,7 @@ namespace Scheduler.Controllers
                         }
                         else
                         {
+
                             addPartResult = PartController.addNewPart(part);
 
 

@@ -468,6 +468,7 @@
     <Content Include="Views\Orders\editOrderCSV.cshtml" />
     <Content Include="Views\Orders\reviewOrderCSVPost.cshtml" />
     <Content Include="Views\Orders\scheduledResults.cshtml" />
+    <Content Include="Views\Schedule\scheduleDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
