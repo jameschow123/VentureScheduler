@@ -791,6 +791,7 @@ namespace Scheduler.Controllers
             int result1 = OrdersController.setOrderStatusProcessing(Id);
             // update SMT start date to current DT.
             int result2 = updateSmtStartDate(Id, DateTime.Now);
+            smtStart = DateTime.Now;
 
             linePartScheduleViewModel order = new linePartScheduleViewModel() { orderName = orderName, partName = partName, lineName = lineName, selectedLine = lineId, status = status, schedule = new Schedule() { orderId = Id, smtStart = smtStart, smtEnd = smtEnd } };
 
