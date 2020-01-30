@@ -345,13 +345,38 @@ namespace Scheduler.Controllers
                 //Calculate BE Time here.
 
 
+
+                // loads lineId,smtEnd date of lines that is able to process this partId
                 var data = ScheduleProcessor.LoadAvailableLineList(order.partId);
+                List<Schedule> ExistingSchedule = new List<Schedule>();
+                foreach (var row in data)
+                {
+                    ExistingSchedule.Add(new Schedule
+                    {
+                        lineId = row.lineId,
+                        smtEnd = row.SMTEnd
+
+                    });
+                }
+
+
+                var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
+                List<ManufacturingTime> linesThatProcessPartList = new List<ManufacturingTime>();
+
+                foreach (var row in getLineData)
+                {
+                    linesThatProcessPartList.Add(new ManufacturingTime
+                    {
+                        lineId = row.lineId,
+
+                    });
+                }
 
                 if (data == null | data.Count.Equals(0))
                 {
 
                     // check if partId has any ManufacturingTime info
-                    var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
+                    //  var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
 
 
                     if (getLineData == null | getLineData.Count.Equals(0))
@@ -366,22 +391,70 @@ namespace Scheduler.Controllers
                 }
                 else
                 {
+                    //  var getLineData = manufacturingTimeProcessor.GetManufacturingTimeByPart(order.partId);
 
-                    //check if SMTend date is more then current date 
-                    if (data[0].SMTEnd <= DateTime.Now)
+
+                    // check if there are lines that are avaiable lines that are not in use.
+                    if (getLineData.Count != data.Count)
                     {
-                        // SMTEnd is lesser then today , set planneStartDate as today + 1 hr
-                        schedule.lineId = data[0].lineId;
+
+
+
+                        var exist = linesThatProcessPartList.Find(p => !ExistingSchedule.Any(p2 => p2.lineId == p.lineId));
+
+                        schedule.lineId = exist.lineId;
+
+                        // Planned startdate = earliest start date or SMendDate. 
                         schedule.plannedStartDate = DateTime.Now.AddHours(1);
+
+
+                        //find line that is idle and assign that line.
+
+                        /*
+                        for (int i = 0; i < linesThatProcessPartList.Count(); i++)
+                        {
+
+
+                            //check though to see if this Id exist in exsiting schedule if not add it with current date.
+                            var exist = ExistingSchedule.Exists(x => x.lineId == linesThatProcessPartList[i].lineId);
+
+                            if (exist == false)
+                            {
+                                ExistingSchedule.Add(new Schedule() { lineId = linesThatProcessPartList[i].lineId, smtEnd = DateTime.Now });
+
+
+                            }
+
+
+                        }
+
+                        ExistingSchedule.OrderByDescending(x => x.smtEnd);
+
+                        schedule.lineId = data[0].lineId;
+
+                        // Planned startdate = earliest start date or SMendDate. 
+                        schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+                        */
+
                     }
+                    else
+                    {
+
+                        //check if SMTend date is more then current date 
+                        if (data[0].SMTEnd <= DateTime.Now)
+                        {
+                            // SMTEnd is lesser then today , set planneStartDate as today + 1 hr
+                            schedule.lineId = data[0].lineId;
+                            schedule.plannedStartDate = DateTime.Now.AddHours(1);
+                        }
 
 
 
-                    schedule.lineId = data[0].lineId;
+                        schedule.lineId = data[0].lineId;
 
-                    // Planned startdate = earliest start date or SMendDate. 
-                    schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
-
+                        // Planned startdate = earliest start date or SMendDate. 
+                        schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
+                    }
                 }
 
 
@@ -723,7 +796,7 @@ namespace Scheduler.Controllers
 
             TempData["smtStartResults"] = result1 + result2;
 
-            return View(order);
+            return RedirectToAction("scheduleDetails", new { Id, orderName, partName, lineName, lineId, smtStart, smtEnd, status });
         }
 
         /// <summary>
@@ -741,6 +814,14 @@ namespace Scheduler.Controllers
             int result1 = OrdersController.setOrderStatusCompleted(Id);
             // update SMT start date to current DT.
             int result2 = updateSmtEndDate(Id, DateTime.Now);
+            if (result1 == 1)
+            {
+                status = "completed";
+            }
+            if (result2 == 1)
+            {
+                smtEnd = DateTime.Now;
+            }
             // update subsequent jobs
 
             updateSubsequentJobs(Id, smtEnd, lineId);
@@ -749,7 +830,9 @@ namespace Scheduler.Controllers
 
             TempData["smtStartResults"] = result1 + result2;
 
-            return View(order);
+
+
+            return RedirectToAction("scheduleDetails", new { Id, orderName, partName, lineName, lineId, smtStart, smtEnd, status });
         }
 
 
@@ -781,7 +864,7 @@ namespace Scheduler.Controllers
                 int totalTime = calculateTotalSMTTIme(mt.manufacturingTIme, quantity);
 
                 schedule.smtEnd = schedule.smtStart.AddSeconds(totalTime);
-
+                smtEnd = schedule.smtEnd;
                 int results = ScheduleProcessor.updateSchedule(schedule.orderId, lineId, schedule.smtStart, schedule.smtEnd);
 
 
@@ -796,7 +879,7 @@ namespace Scheduler.Controllers
         {
 
             //select all jobs after current jobs
-            var ScheduleListData = ScheduleProcessor.LoadSubsequentSchedule(lineId, smtEnd); ;
+            var ScheduleListData = ScheduleProcessor.LoadSubsequentSchedule(lineId, smtEnd);
 
             List<Schedule> scheduleList = new List<Schedule>();
 

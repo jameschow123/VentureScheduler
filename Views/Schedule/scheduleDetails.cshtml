@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>scheduleDetails</h2>
+<h2>Schedule details</h2>
 
 <div>
-    <h4>linePartScheduleViewModel</h4>
+    <h4>Details for: @Model.orderName </h4>
     <hr />
     <dl class="dl-horizontal">
 
@@ -80,8 +80,8 @@
 <p>
 
     @if (Model.status == "scheduled")
-    {@Html.ActionLink("Start", "smtStart", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status }) }
+    {@Html.ActionLink("Start", "smtStart", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status })}
     @if (Model.status == "processing")
-    {@Html.ActionLink("End", "smtEnd", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status }) }
+    {@Html.ActionLink("End", "smtEnd", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status })}
     | @Html.ActionLink("Back to List", "Index")
 </p>
