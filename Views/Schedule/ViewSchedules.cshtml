@@ -64,113 +64,178 @@
     });
 
 
+
+
+
+    $(document.body).on('change', "#statusDDL", function (e) {
+        //doStuff
+        console.log("test2")
+
+        var optVal = $("#statusDDL option:selected").val();
+        console.log(optVal)
+
+
+        $.ajax({
+            url: "/Schedule/ViewSchedulesStatus",
+            type: "POST",
+            data: { 'status': optVal },
+            success: function (data) {
+
+
+
+                console.log("success JS exeuted")
+                $("#tblLocations").html(data); // HTML DOM replace
+            }
+        });
+
+
+    });
+
 </script>
 
-
+<head></head>
+<body></body>
 @using (Html.BeginForm("ViewSchedules", "Schedule", FormMethod.Post, new { id = "submitTest" }))
 {
     <h2>View Schedules</h2>
+    <div class="form-group">
+        <div class="col-md-10" align="left">
+            @{
+                List<SelectListItem> listItemsPriority = new List<SelectListItem>();
+                listItemsPriority.Add(new SelectListItem
+                {
+                    Text = "Scheduled",
+                    Value = "scheduled"
+                });
+                listItemsPriority.Add(new SelectListItem
+                {
+                    Text = "Processing",
+                    Value = "processing",
+                    Selected = true
+                });
+                listItemsPriority.Add(new SelectListItem
+                {
+                    Text = "Completed",
+                    Value = "completed"
+                });
 
-    <table class="table" id="tblLocations">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.orderName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.partName)
-            </th>
+            }
 
-            <th>
-                @Html.DisplayNameFor(model => model.lineName)
-            </th>
-            @*
-                <th>
-                    @Html.DisplayNameFor(model => model.schedule.BEDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.schedule.latestStartDate)
-                </th>
+            @Html.DropDownList("Status", new SelectList(listItemsPriority, "Value", "Text"), htmlAttributes: new { @class = "form-control", @id = "statusDDL" })
+        </div>
+    </div>
 
-            *@
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.smtStart)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.schedule.smtEnd)
-            </th>
-            <th></th>
-        </tr>
+    <br />
+    <br / >
+    <div class="form-group">
 
+        @*  <table class="table" id="tblLocations">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.orderName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partName)
+                    </th>
 
-        @foreach (var item in Model)
-        {
-            //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
-
-            <tr>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.orderName)
-                    <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
-                    <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
-
-
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.partName)
-                    <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
-
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.lineName)
-                    <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
-                    <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
-
-                </td>
-                @*
-                    <td>
-                        @Html.DisplayFor(modelItem => item.schedule.BEDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
-                    </td>
-                *@
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.smtStart)
-                    <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
-
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.schedule.smtEnd)
-                    <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
-
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
-                    @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
-                </td>
-            </tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.lineName)
+                    </th>
+                    @*
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.BEDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.latestStartDate)
+                        </th>
 
 
-        }
+                    <th>
+                        @Html.DisplayNameFor(model => model.schedule.smtStart)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.schedule.smtEnd)
+                    </th>
+                    <th></th>
+                </tr>
 
-    </table>
+
+                @foreach (var item in Model)
+                {
+                    //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
+
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.orderName)
+                            <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+                            <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
 
 
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.partName)
+                            <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
 
-    <input type="submit" value="Update Preference" />
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.lineName)
+                            <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
+                            <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
+
+                        </td>
+                        @*
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.BEDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
+                            </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.schedule.smtStart)
+                            <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.schedule.smtEnd)
+                            <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
+
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
+                            @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
+                        </td>
+                    </tr>
+
+
+                }
+
+            </table>
+
+        *@
+
+
+        <div id="mydetailsTable">
+            @Html.Partial("schedulesPartial")
+                
+        </div>
+
+        <input type="submit" value="Update Preference" />
+    </div>
 }
 

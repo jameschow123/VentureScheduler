@@ -22,9 +22,78 @@ namespace Scheduler.Controllers
 
         public ActionResult ViewSchedules()
         {
+            if (TempData["ViewSchedulesStatus"] == null)
+            {
+                //ViewBag.Message = "Order List";
+
+                var data = ScheduleProcessor.LoadSchedule();
+
+                //  List<Schedule> schedule = new List<Schedule>();
+
+
+                List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
+
+
+
+
+                foreach (var row in data)
+                {
+
+                    linePartScheduleViewModel linePartSchedule = new linePartScheduleViewModel();
+
+
+                    linePartSchedule.schedule = new Schedule();
+
+
+
+                    linePartSchedule.schedule.orderId = row.orderId;
+                    linePartSchedule.schedule.partId = row.partId;
+                    linePartSchedule.schedule.lineId = row.lineId;
+                    linePartSchedule.schedule.backendId = row.backendId;
+                    linePartSchedule.schedule.BEDate = row.BEDate;
+                    linePartSchedule.schedule.earlistStartDate = row.EarliestStartDate;
+                    linePartSchedule.schedule.plannedStartDate = row.PlannedStartDate;
+                    linePartSchedule.schedule.latestStartDate = row.LatestStartDate;
+                    linePartSchedule.schedule.smtStart = row.SMTStart;
+                    linePartSchedule.schedule.smtEnd = row.SMTEnd;
+
+
+                    linePartSchedule.lineName = LineController.getLineName(row.lineId);
+
+                    linePartSchedule.partName = PartController.getPartName(row.partId);
+
+                    string Ordername = OrdersController.getOrderByIdReturnName(linePartSchedule.schedule.orderId);
+                    linePartSchedule.orderName = Ordername;
+
+                    scheduleViewModel.Add(linePartSchedule);
+
+
+                };
+                return View(scheduleViewModel);
+
+            }
+            else
+            {
+                List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
+                scheduleViewModel = (List<linePartScheduleViewModel>)TempData["ViewSchedulesStatus"];
+                //return View(scheduleViewModel);
+                // return RedirectToAction("ViewSchedules", "Schedule");
+                return PartialView("schedulesPartial", scheduleViewModel);
+
+
+
+            }
+
+
+
+        }
+
+
+        public ActionResult ViewSchedulesStatus(string status)
+        {
             //ViewBag.Message = "Order List";
 
-            var data = ScheduleProcessor.LoadSchedule();
+            var data = ScheduleProcessor.LoadSchedule(status);
 
             //  List<Schedule> schedule = new List<Schedule>();
 
@@ -67,7 +136,10 @@ namespace Scheduler.Controllers
 
 
             };
-            return View(scheduleViewModel);
+
+            TempData["ViewSchedulesStatus"] = scheduleViewModel.ToList();
+
+            return RedirectToAction("ViewSchedules");
 
 
         }
@@ -77,37 +149,46 @@ namespace Scheduler.Controllers
 
 
 
-
-
-
         [HttpPost]
         public ActionResult ViewSchedules(int[] orderId)
         {
-            List<Schedule> schedule = new List<Schedule>();
-
-            //Get List of orders
-            List<Order> orders = new List<Order>();
-            orders = OrdersController.getListOrders();
-
-            List<Order> sortedListOrders = new List<Order>();
-
-
-            //Iterate through the array from first to last (priority), call scheduleOrder method to handle scheduling
-            for (int i = 0; i < orderId.Length; i++)
+            if (TempData["ViewSchedulesStatus"] == null)
             {
-                Order order = orders.Find(x => x.orderId == orderId[i]);
+                List<Schedule> schedule = new List<Schedule>();
 
-                //  reScheduleOrder(order);
+                //Get List of orders
+                List<Order> orders = new List<Order>();
+                orders = OrdersController.getListOrders();
 
-                sortedListOrders.Add(order);
+                List<Order> sortedListOrders = new List<Order>();
+
+
+                //Iterate through the array from first to last (priority), call scheduleOrder method to handle scheduling
+                for (int i = 0; i < orderId.Length; i++)
+                {
+                    Order order = orders.Find(x => x.orderId == orderId[i]);
+
+                    //  reScheduleOrder(order);
+
+                    sortedListOrders.Add(order);
+
+                }
+
+
+                reScheduleOrder(sortedListOrders);
+
+
+                return RedirectToAction("ViewSchedules");
 
             }
 
+            else
+            {
+                List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
+                scheduleViewModel = (List<linePartScheduleViewModel>)TempData["ViewSchedulesStatus"];
+                return View(scheduleViewModel);
 
-            reScheduleOrder(sortedListOrders);
-
-
-            return RedirectToAction("ViewSchedules");
+            }
         }
 
         public static long ToUnixTime(DateTime date)
@@ -777,6 +858,9 @@ namespace Scheduler.Controllers
             return View(order);
         }
 
+
+
+
         /// <summary>
         /// Start of Smt process, change order.status = processing and schedule.smtStart = Datetime.Now
         /// </summary>
@@ -792,6 +876,24 @@ namespace Scheduler.Controllers
             // update SMT start date to current DT.
             int result2 = updateSmtStartDate(Id, DateTime.Now);
             smtStart = DateTime.Now;
+
+            //updated estimated SMTEND date
+            var data = OrderProcessor.LoadOrder(Id);
+            Order orderData = new Order();
+            foreach (var row in data)
+            {
+                orderData.partId = row.partId;
+
+            }
+
+
+
+            DateTime estimatedEndDate = updateEstimatedEndDate(Id, smtStart, lineId, orderData.partId);
+
+
+            //get all subsequent jobs 
+            updateSubsequentJobs(Id, estimatedEndDate, lineId);
+            //reschedule all subsequent orders based on the new start time
 
             linePartScheduleViewModel order = new linePartScheduleViewModel() { orderName = orderName, partName = partName, lineName = lineName, selectedLine = lineId, status = status, schedule = new Schedule() { orderId = Id, smtStart = smtStart, smtEnd = smtEnd } };
 
@@ -913,5 +1015,42 @@ namespace Scheduler.Controllers
 
 
 
+        public static DateTime updateEstimatedEndDate(int orderId, DateTime smtStart, int lineId, int partId)
+        {
+
+
+            var MTTimeByPart = manufacturingTimeProcessor.GetManufacturingTime(lineId, partId);
+            ManufacturingTime mt = new ManufacturingTime();
+            foreach (var row in MTTimeByPart)
+            {
+                mt.manufacturingTIme = row.manufacturingTime;
+
+            }
+
+            int quantity = OrdersController.getQuantityByID(orderId);
+
+
+            int totalTIme = calculateTotalSMTTIme(mt.manufacturingTIme, quantity);
+
+
+            DateTime smtEnd = smtStart.AddSeconds(totalTIme);
+
+            ScheduleProcessor.updateScheduleSmtEndDate(orderId, smtEnd);
+
+
+            return smtEnd;
+
+
+
+        }
+
+
+
+
+
+
+
     }
+
+
 }
