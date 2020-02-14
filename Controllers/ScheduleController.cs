@@ -30,7 +30,7 @@ namespace Scheduler.Controllers
 
                 //  List<Schedule> schedule = new List<Schedule>();
 
-
+                var statusData = OrderProcessor.LoadOrderStatus();
                 List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
 
 
@@ -65,6 +65,9 @@ namespace Scheduler.Controllers
                     string Ordername = OrdersController.getOrderByIdReturnName(linePartSchedule.schedule.orderId);
                     linePartSchedule.orderName = Ordername;
 
+
+                    linePartSchedule.status = statusData.SingleOrDefault(x => x.orderId == linePartSchedule.schedule.orderId).status;
+
                     scheduleViewModel.Add(linePartSchedule);
 
 
@@ -89,17 +92,40 @@ namespace Scheduler.Controllers
         }
 
 
-        public ActionResult ViewSchedulesStatus(string status)
+        public ActionResult ViewSchedulesStatus(string status, int lineId)
         {
             //ViewBag.Message = "Order List";
+            var data = (dynamic)null;
 
-            var data = ScheduleProcessor.LoadSchedule(status);
 
+            if (lineId != 0 && status != "null")
+            {
+                data = ScheduleProcessor.LoadSchedule(status, lineId);
+
+            }
+            else if (lineId == 0 && status == "null")
+            {
+                data = ScheduleProcessor.LoadSchedule();
+            }
+            else if (lineId != 0 || status != "null")
+            {
+
+                if (status != "null")
+                {
+                    data = ScheduleProcessor.LoadSchedule(status);
+                }
+                else if (lineId != 0)
+                {
+                    data = ScheduleProcessor.LoadSchedule(lineId);
+                }
+            }
+           
             //  List<Schedule> schedule = new List<Schedule>();
 
 
             List<linePartScheduleViewModel> scheduleViewModel = new List<linePartScheduleViewModel>();
 
+            var statusData = OrderProcessor.LoadOrderStatus();
 
 
 
@@ -131,6 +157,9 @@ namespace Scheduler.Controllers
 
                 string Ordername = OrdersController.getOrderByIdReturnName(linePartSchedule.schedule.orderId);
                 linePartSchedule.orderName = Ordername;
+
+                linePartSchedule.status = statusData.SingleOrDefault(x => x.orderId == linePartSchedule.schedule.orderId).status;
+
 
                 scheduleViewModel.Add(linePartSchedule);
 
@@ -453,6 +482,7 @@ namespace Scheduler.Controllers
                     });
                 }
 
+                // check if there is any lines that are scheduled
                 if (data == null | data.Count.Equals(0))
                 {
 
@@ -467,7 +497,7 @@ namespace Scheduler.Controllers
                     }
 
                     schedule.lineId = getLineData[0].lineId;
-                    schedule.plannedStartDate = schedule.earlistStartDate.AddSeconds(1);
+                    schedule.plannedStartDate = DateTime.Now.AddHours(1);
 
                 }
                 else

@@ -535,6 +535,8 @@ namespace Scheduler.Controllers
 
             int created = 0;
 
+            order.status = "unscheduled";
+            order.priority = 3;
 
 
 
@@ -1007,6 +1009,16 @@ namespace Scheduler.Controllers
 
 
         }
+
+        public ActionResult displayUnscheduledOrders()
+        {
+
+            
+
+            return RedirectToAction("reviewOrderCSVPost");
+        }
+
+    
 
 
         public ActionResult reviewOrderCSV(List<Order> orders)

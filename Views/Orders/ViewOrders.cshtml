@@ -6,98 +6,102 @@
 }
 
 <h2>View Orders</h2>
+<div class="form-group">
+    <p>
+        @Html.ActionLink("Create New order", "newOrder")
 
-<p>
-    @Html.ActionLink("Create New order", "newOrder")
+    </p>
 
-</p>
+    <p>
+        @Html.ActionLink("Import Orders (via Excel)", "importOrderCSV")
 
-<p>
-    @Html.ActionLink("Import Orders (via Excel)", "importOrderCSV")
-
-</p>
-
-
-
-
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.orderId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.partId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.projectName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.lastMaterialDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.shipDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.quantity)
-        </th>
-
-
-        <th>
-            @Html.DisplayNameFor(model => model.status)
-        </th>
-
-    </tr>
-
-    @foreach (var item in Model)
+    </p>
+    @using (Html.BeginForm("reviewOrderCSVPost", "Orders", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.orderId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.partId)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.projectName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.lastMaterialDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.shipDate)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.quantity)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.status)
-    </td>
-
-
-    <td>
-        @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
-        @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId })
-    </td>
-</tr>
+        <input type="submit" value="Schedule orders" class="btn btn-primary">
     }
-
-
-</table>
-
+    </div>
 
 
 
 
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.orderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.partId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.projectName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.lastMaterialDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.shipDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.quantity)
+            </th>
 
-@if (TempData["newOrderResult"] != null)
-{
-    // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+            <th>
+                @Html.DisplayNameFor(model => model.status)
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.partId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.projectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.lastMaterialDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.shipDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
 
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <td>
+                    @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
+                    @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId })
+                </td>
+            </tr>
+        }
 
-    <script type="text/javascript">
+
+    </table>
+
+
+
+
+
+
+    @if (TempData["newOrderResult"] != null)
+    {
+        // <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        <script type="text/javascript">
         if (@TempData["newOrderResult"] == 1)
             swal("Success!", "New order is added and scheduled!", "success");
              else if (@TempData["newOrderResult"] == -1)
@@ -113,5 +117,5 @@
        if (@TempData["newOrderResult"] == 3)
                     swal("Success!", "Order is Updated!", "success");
 
-    </script>
-}
+        </script>
+    }

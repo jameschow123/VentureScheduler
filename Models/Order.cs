@@ -38,10 +38,7 @@ namespace Scheduler.Models
         [Range(1, 10000, ErrorMessage = "Please enter a valid quantity!")]
         public int quantity { get; set; }
 
-        [Required(ErrorMessage = "Status is required!")]
         public string status { get; set; }
-        [Required(ErrorMessage = "priority is required!")]
-        [Range(1, 3, ErrorMessage = "Please enter a valid priority from 1(highest)-3(normal)")]
         public int priority { get; set; }
 
         public bool statusBool { get; set; }

@@ -13,187 +13,187 @@
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Order</h4>
-        <hr />
+<div class="form-horizontal">
+    <h4>Order</h4>
+    <hr />
 
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.order.orderId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.order.orderId, new { htmlAttributes = new { @class = "form-control", @id = "btnorderId" } })
-                @Html.ValidationMessageFor(model => model.order.orderId, "", new { @class = "text-danger" })
-                <span id="message"></span>
+    <div class="form-group">
+        @Html.LabelFor(model => model.order.orderId, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.order.orderId, new { htmlAttributes = new { @class = "form-control", @id = "btnorderId" } })
+            @Html.ValidationMessageFor(model => model.order.orderId, "", new { @class = "text-danger" })
+            <span id="message"></span>
 
-            </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(x => Model.selectedPart, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.selectedPart, new SelectList(Model.parts, "partId", "partName"), "select", htmlAttributes: new { @name = "partId", @class = "form-control" })
-
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.order.projectName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.order.projectName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.order.projectName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.order.lastMaterialDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.order.lastMaterialDate, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
-                @Html.ValidationMessageFor(model => model.order.lastMaterialDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.order.shipDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-
-                @Html.EditorFor(model => model.order.shipDate, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
-                @Html.ValidationMessageFor(model => model.order.shipDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.order.quantity, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.order.quantity, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.order.quantity, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-
-
-
-
-        <br />
-
-
-
-
-
-
-
-        <script type="text/javascript">
-
-            $(document).ready(function () {
-
-
-
-                $("#submit").hide();
-                CheckAvailability()
-
-
-
-
-            });
-
-
-
-            $(function () {
-
-
-                $('.datetimepicker').datetimepicker({
-
-                    format: 'DD/MM/YYYY HH:mm',
-
-
-                });
-            });
-
-
-
-
-
-
-
-
-            var timer = null;
-            $('#btnorderId').keydown(function () {
-                clearTimeout(timer);
-                timer = setTimeout(CheckAvailability, 1000)
-            });
-
-
-            function CheckAvailability() {
-                var orderId = $("#btnorderId").val();
-                $.ajax({
-                    type: "POST",
-                    url: "/Orders/CheckOrderId",
-                    data: '{orderId: "' + orderId + '"}',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (response) {
-                        var message = $("#message");
-                        if (response) {
-                            //orderId is available.
-                            message.css("color", "green");
-                            message.html("OrderId is available");
-                            $("#submit").show();
-                        }
-                        else {
-                            //orderId already exist
-                            message.css("color", "red");
-                            message.html("OrderId already exist!");
-                            $("#submit").hide();
-
-                        }
-                    }
-                });
-            };
-
-            function ClearMessage() {
-                $("#message").html("");
-            };
-
-
-
-
-
-        </script>
-
-
-
-
-
-
-
-
-
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input id="submit" type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
-
-
-
-
-        @if (TempData["Success"] != null)
-        {
-            <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
-        }
-
-
-        <div>
-            @Html.ActionLink("Back to List", "Index")
-        </div>
-
-        @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-        }
-
     </div>
+    <div class="form-group">
+        @Html.LabelFor(x => Model.selectedPart, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.selectedPart, new SelectList(Model.parts, "partId", "partName"), "select", htmlAttributes: new { @name = "partId", @class = "form-control" })
+
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.order.projectName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.order.projectName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.order.projectName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.order.lastMaterialDate, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.order.lastMaterialDate, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
+            @Html.ValidationMessageFor(model => model.order.lastMaterialDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.order.shipDate, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+
+            @Html.EditorFor(model => model.order.shipDate, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
+            @Html.ValidationMessageFor(model => model.order.shipDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.order.quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.order.quantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.order.quantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+ 
+
+
+    <br />
+
+
+
+
+
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+
+            $("#submit").hide();
+            CheckAvailability()
+
+
+
+
+        });
+
+
+
+        $(function () {
+
+
+            $('.datetimepicker').datetimepicker({
+
+                format: 'DD/MM/YYYY HH:mm',
+
+
+            });
+        });
+
+
+
+
+
+
+
+
+        var timer = null;
+        $('#btnorderId').keydown(function () {
+            clearTimeout(timer);
+            timer = setTimeout(CheckAvailability, 1000)
+        });
+
+
+        function CheckAvailability() {
+            var orderId = $("#btnorderId").val();
+            $.ajax({
+                type: "POST",
+                url: "/Orders/CheckOrderId",
+                data: '{orderId: "' + orderId + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var message = $("#message");
+                    if (response) {
+                        //orderId is available.
+                        message.css("color", "green");
+                        message.html("OrderId is available");
+                        $("#submit").show();
+                    }
+                    else {
+                        //orderId already exist
+                        message.css("color", "red");
+                        message.html("OrderId already exist!");
+                        $("#submit").hide();
+
+                    }
+                }
+            });
+        };
+
+        function ClearMessage() {
+            $("#message").html("");
+        };
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="submit" type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+
+
+
+
+    @if (TempData["Success"] != null)
+    {
+        <p class="alert alert-success" id="successMessage">@TempData["Success"]</p>
+    }
+
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+</div>
 
 
 }

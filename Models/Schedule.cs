@@ -26,21 +26,27 @@ namespace Scheduler.Models
         public int backendId { get; set; }
         [Display(Name = "Backend Required Date")]
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime BEDate { get; set; }
         [Display(Name = "Earliest Start-date")]
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime earlistStartDate { get; set; }
         [Display(Name = "Planned Start-date")]
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime plannedStartDate { get; set; }
         [DataType(DataType.DateTime)]
         [Display(Name = "Latest Start-date")]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime latestStartDate { get; set; }
         [DataType(DataType.DateTime)]
         [Display(Name = "SMT Start-date")]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime smtStart { get; set; }
         [DataType(DataType.DateTime)]
         [Display(Name = "SMT End-date")]
+        [DisplayFormat(DataFormatString = "{0: dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime smtEnd { get; set; }
 
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)

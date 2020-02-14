@@ -4,6 +4,10 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
+.statusLate {
+    color: red
+}
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
@@ -2409,8 +2413,7 @@ th {
 }
 
     .table tr:nth-child(even) {
-        background: #f7a03eed;
-        
+        background: #DFDBDA;
     }
 
 .table-condensed > thead > tr > th,
@@ -3221,54 +3224,54 @@ fieldset[disabled] .btn-default.focus {
   background-color: #333;
 }
 .btn-primary {
-  color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
+    color: #fff;
+    background-color: #919496;
+    border-color: #919496;
 }
-.btn-primary:focus,
-.btn-primary.focus {
-  color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
-}
-.btn-primary:hover {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
-}
-.btn-primary:active,
-.btn-primary.active,
-.open > .dropdown-toggle.btn-primary {
-  color: #fff;
-  background-color: #286090;
-  background-image: none;
-  border-color: #204d74;
-}
-.btn-primary:active:hover,
-.btn-primary.active:hover,
-.open > .dropdown-toggle.btn-primary:hover,
-.btn-primary:active:focus,
-.btn-primary.active:focus,
-.open > .dropdown-toggle.btn-primary:focus,
-.btn-primary:active.focus,
-.btn-primary.active.focus,
-.open > .dropdown-toggle.btn-primary.focus {
-  color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
-}
-.btn-primary.disabled:hover,
-.btn-primary[disabled]:hover,
-fieldset[disabled] .btn-primary:hover,
-.btn-primary.disabled:focus,
-.btn-primary[disabled]:focus,
-fieldset[disabled] .btn-primary:focus,
-.btn-primary.disabled.focus,
-.btn-primary[disabled].focus,
-fieldset[disabled] .btn-primary.focus {
-  background-color: #337ab7;
-  border-color: #2e6da4;
-}
+    .btn-primary:focus,
+    .btn-primary.focus {
+        color: #fff;
+        background-color: #919496;
+        border-color: #122b40;
+    }
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #919496;
+        border-color: #204d74;
+    }
+    .btn-primary:active,
+    .btn-primary.active,
+    .open > .dropdown-toggle.btn-primary {
+        color: #fff;
+        background-color: #919496;
+        background-image: none;
+        border-color: #204d74;
+    }
+        .btn-primary:active:hover,
+        .btn-primary.active:hover,
+        .open > .dropdown-toggle.btn-primary:hover,
+        .btn-primary:active:focus,
+        .btn-primary.active:focus,
+        .open > .dropdown-toggle.btn-primary:focus,
+        .btn-primary:active.focus,
+        .btn-primary.active.focus,
+        .open > .dropdown-toggle.btn-primary.focus {
+            color: #fff;
+            background-color: #919496;
+            border-color: #122b40;
+        }
+    .btn-primary.disabled:hover,
+    .btn-primary[disabled]:hover,
+    fieldset[disabled] .btn-primary:hover,
+    .btn-primary.disabled:focus,
+    .btn-primary[disabled]:focus,
+    fieldset[disabled] .btn-primary:focus,
+    .btn-primary.disabled.focus,
+    .btn-primary[disabled].focus,
+    fieldset[disabled] .btn-primary.focus {
+        background-color: #919496;
+        border-color: #2e6da4;
+    }
 .btn-primary .badge {
   color: #337ab7;
   background-color: #fff;
@@ -3753,7 +3756,7 @@ tbody.collapse.in {
 .btn-group .btn + .btn-group,
 .btn-group .btn-group + .btn,
 .btn-group .btn-group + .btn-group {
-  margin-left: -1px;
+  margin-left: 10px;
 }
 .btn-toolbar {
   margin-left: -5px;
