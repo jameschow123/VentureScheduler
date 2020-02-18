@@ -80,8 +80,13 @@
 
 
                 <td>
-                    @Html.ActionLink("Edit", "editOrder", new { id = item.orderId }) |
-                    @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId })
+
+                    @if (item.status == "unscheduled" || item.status == "scheduled")
+                    {
+                        @Html.ActionLink("Edit", "editOrder", new { id = item.orderId });
+                        @:|
+                        @Html.ActionLink("Delete", "deleteOrder", new { id = item.orderId });
+                    }
                 </td>
             </tr>
         }

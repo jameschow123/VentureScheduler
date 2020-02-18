@@ -27,8 +27,9 @@ namespace Scheduler.ViewModel
         public int manufacturingTIme { get; set; }
 
 
-
+        [Display(Name = "Line Name")]
         public string lineName { get; set; }
+        [Display(Name = "Product No.")]
         public string partName { get; set; }
 
         public string error { get; set; }

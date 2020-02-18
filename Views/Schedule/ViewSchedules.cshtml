@@ -176,7 +176,7 @@
 
             }
 
-            @Html.DropDownList("Status", new SelectList(listItemsPriority, "Value", "Text"), htmlAttributes: new { @class="btn btn-primary dropdown-toggle", @id = "statusDDL" })
+            @Html.DropDownList("statusDDL", new SelectList(listItemsPriority, "Value", "Text"), htmlAttributes: new { @class="btn btn-primary dropdown-toggle", @id = "statusDDL" })
             
             @{
                 List<SelectListItem> LineItems = new List<SelectListItem>();

@@ -179,7 +179,7 @@ namespace Scheduler.Controllers
 
 
         [HttpPost]
-        public ActionResult ViewSchedules(int[] orderId)
+        public ActionResult ViewSchedules(int[] orderId, string[] status)
         {
             if (TempData["ViewSchedulesStatus"] == null)
             {
@@ -195,6 +195,11 @@ namespace Scheduler.Controllers
                 //Iterate through the array from first to last (priority), call scheduleOrder method to handle scheduling
                 for (int i = 0; i < orderId.Length; i++)
                 {
+                    //check status of order, if order status = processing , skip the order
+                    if (status[i] == "processing" || status[i] == "completed")
+                    {
+                        continue;
+                    }
                     Order order = orders.Find(x => x.orderId == orderId[i]);
 
                     //  reScheduleOrder(order);
@@ -243,7 +248,7 @@ namespace Scheduler.Controllers
 
             //return temp var with datetime format in ISO.
 
-            TempData["index"] = "http://127.0.0.1:5002/getSchedule?from=" + startDateUTC2 + "&to=" + endDateUTC2 + "&color=Status&ref=Yes&search=";
+            TempData["index"] = "http://127.0.0.1:5002/getSchedule?from=" + startDateUTC2 + "&to=" + endDateUTC2 + "&color=Status&ref=Yes&db=ventureDB&search=";
 
             return RedirectToAction("Index", "Home");
         }
@@ -256,8 +261,10 @@ namespace Scheduler.Controllers
             int result = -1;
 
             //1.  get existing scheduling List
-            var ScheduleListData = ScheduleProcessor.LoadSMTStartGroupByLineId();
+            // var ScheduleListData = ScheduleProcessor.LoadSMTStartGroupByLineId();
 
+
+            var ScheduleListData = ScheduleProcessor.LoadLinesLastJobPending();
             List<Schedule> existingScheduleList = new List<Schedule>();
 
             foreach (var row in ScheduleListData)
@@ -267,8 +274,8 @@ namespace Scheduler.Controllers
                 {
 
                     lineId = row.lineId,
-                    smtStart = row.SMTStart,
-
+                    //smtStart = row.SMTStart,
+                    smtStart = row.SMTEnd
 
                 });
             }
@@ -292,11 +299,19 @@ namespace Scheduler.Controllers
                     if (templine != null)
                     {
 
-                        /* if exist , check smt startdate is Not later then current DT, if not set as current DT+1
+                        // if exist , check smt startdate is Not later then current DT, if not set as current DT+1
                         if (templine.smtStart <= DateTime.Now)
                         {
-                            existingScheduleList.FirstOrDefault(p => p.lineId == line.lineId).smtStart = DateTime.Now.AddHours(1);
-                        }*/
+                            //existingScheduleList.FirstOrDefault(p => p.lineId == line.lineId).smtStart = DateTime.Now.AddHours(1);
+
+                            templine.smtStart = DateTime.Now.AddHours(1);
+                        }
+                        // set the smtEnd date as SMT start date for the next process
+
+                       // templine.smtStart = templine.smtEnd;
+
+
+
                         continue;
                     }
                     else
@@ -317,7 +332,13 @@ namespace Scheduler.Controllers
             // iterate though the new ordered list
             for (int i = 0; i < orders.Count; i++)
             {
+
+               
+
                 Order order = orders[i];
+
+
+                
 
                 //2. check which line processes part in order of MT
                 // check if partId has any ManufacturingTime info
@@ -899,6 +920,28 @@ namespace Scheduler.Controllers
         public ActionResult smtStart(int Id, string orderName, string partName, string lineName, int lineId, DateTime smtStart, DateTime smtEnd, string status)
         {
 
+            // check if line is processing any job if there is , return error
+            var processingLineData = ScheduleProcessor.getLineProcessing();
+            List<Schedule> schedules = new List<Schedule>();
+
+
+            foreach (var row in processingLineData)
+            {
+                schedules.Add(new Schedule
+                {
+                   lineId = row.lineId
+
+                });
+            }
+
+            bool exist = schedules.Exists(x => x.lineId == lineId);
+
+            if (exist == true)
+            {
+                TempData["smtStartResults"] = -1;
+
+                return RedirectToAction("scheduleDetails", new { Id, orderName, partName, lineName, lineId, smtStart, smtEnd, status });
+            }
 
 
             // set order status processing.
