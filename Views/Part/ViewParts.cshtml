@@ -5,6 +5,54 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
+    <script type="text/javascript">
+
+        function deletePart(partId) {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover your Part!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        data: { 'partId': partId },
+                        url: "/Part/deletePartJson",
+                        dataType: "json",
+                        success: function (response) {
+                            swal("Part has been successfully deleted!", {
+                                icon: "success",
+                            }).then(function () {
+                                window.location.href = "/Part/ViewParts"
+                            });
+
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+
+                }
+                else {
+                     swal("Operation aborted!");
+                }
+            });
+        }
+
+
+
+
+
+
+    </script>
+
+
 <h2>View Parts</h2>
 
 <p>
@@ -32,8 +80,7 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.partId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.partId }) |
-                @Html.ActionLink("Delete", "deletePart", new { id = item.partId })
+                <a href="#" onclick=deletePart('@item.partId')>Delete</a>
             </td>
         </tr>
     }

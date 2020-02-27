@@ -148,6 +148,30 @@ namespace Scheduler.Controllers
             return View();
         }
 
+
+
+        [HttpPost]
+        public JsonResult deletePartJson(int partId)
+        {
+            try
+            {
+
+                int deleted = PartProcessor.DeletePart(
+                    partId
+                    );
+
+
+
+                return Json("Delete");
+
+            }
+            catch
+            {
+                return Json("Error");
+            }
+
+        }
+
         // method checks if partName has been taken
         [HttpPost]
         public JsonResult CheckPartName(string partName, int side)

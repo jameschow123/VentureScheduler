@@ -569,6 +569,30 @@ namespace Scheduler.Controllers
         }
 
 
+
+        [HttpPost]
+        public JsonResult deleteManufacturingJson(int selectedLine, int selectedPart)
+        {
+            try
+            {
+
+                int deleted = manufacturingTimeProcessor.deleteMT(
+                    selectedLine, selectedPart
+                    );
+
+
+
+                return Json("Delete");
+
+            }
+            catch
+            {
+                return Json("Error");
+            }
+
+        }
+
+
         public ActionResult importManufacturingCSV()
         {
             TempData["importManufacturingCSV"] = 0;
