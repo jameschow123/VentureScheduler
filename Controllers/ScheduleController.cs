@@ -1108,6 +1108,33 @@ namespace Scheduler.Controllers
         }
 
 
+        [HttpPost]
+        public JsonResult deletescheduleJson(int orderId)
+        {
+            try
+            {
+
+                int deleted = ScheduleProcessor.DeleteSchedule(
+                    orderId
+                    );
+
+
+                //set current order to unscheduled.
+
+                OrderProcessor.setOrderSchedule(orderId, "unscheduled");
+                
+
+                return Json("Delete");
+
+            }
+            catch
+            {
+                return Json("Error");
+            }
+
+        }
+
+
 
 
 

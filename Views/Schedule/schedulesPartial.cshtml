@@ -6,6 +6,48 @@
 }
 
 
+<script type="text/javascript">
+
+
+     function deleteSchedule(orderId) {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you order will be marked as unscheduled!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        data: { 'orderId': orderId },
+                        url: "/Schedule/deletescheduleJson",
+                        dataType: "json",
+                        success: function (response) {
+                            swal("Order has been marked unscheduled!", {
+                                icon: "success",
+                            }).then(function () {
+                                window.location.href = "/Schedule/ViewSchedules"
+                            });
+
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+
+                }
+                else {
+                     swal("Operation aborted!");
+                }
+            });
+        }
+
+</script>
+
 <p>
 
 </p>
@@ -184,6 +226,8 @@
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
                     @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
+                    <a href="#" onclick=deleteSchedule('@item.schedule.orderId')>Delete</a>
+
                     @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
                 </td>
             </tr>
