@@ -719,6 +719,31 @@ namespace Scheduler.Controllers
         }
 
 
+
+        [HttpPost]
+        public JsonResult deleteOrderJson(int orderId)
+        {
+            try
+            {
+
+                int deleted = OrderProcessor.DeleteOrder(
+                    orderId
+                    );
+
+
+               
+                   return Json("Delete");
+              
+            } 
+                catch
+                {
+                    return Json("Error");
+                }
+
+        }      
+        
+
+
         public ActionResult deleteOrderCSV(int id)
         {
             if (ModelState.IsValid)

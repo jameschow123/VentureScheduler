@@ -256,14 +256,10 @@ namespace Scheduler.Controllers
 
         //methods get the 
         public static int reScheduleOrder(List<Order> orders)
-        {
-
-            int result = -1;
+        {    int result = -1;
 
             //1.  get existing scheduling List
             // var ScheduleListData = ScheduleProcessor.LoadSMTStartGroupByLineId();
-
-
             var ScheduleListData = ScheduleProcessor.LoadLinesLastJobPending();
             List<Schedule> existingScheduleList = new List<Schedule>();
 
@@ -279,7 +275,6 @@ namespace Scheduler.Controllers
 
                 });
             }
-
             // count number of lines , if line is not yet scheduled, set line SmtStart as datetime.now + 1hour
             var lines = LineProcessor.LoadLine();
             int NoOfLine = lines.Count();
@@ -332,13 +327,8 @@ namespace Scheduler.Controllers
             // iterate though the new ordered list
             for (int i = 0; i < orders.Count; i++)
             {
-
-               
-
+             
                 Order order = orders[i];
-
-
-                
 
                 //2. check which line processes part in order of MT
                 // check if partId has any ManufacturingTime info
