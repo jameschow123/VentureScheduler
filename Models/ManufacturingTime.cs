@@ -15,6 +15,7 @@ namespace Scheduler.Models
         [Required(ErrorMessage = "Part is required!")]
         [Display(Name = "Parts")]
         public int PartId { get; set; }
+
         [Display(Name = "SMT Manufacturing Time")]
         [Required(ErrorMessage = "Manufacturing Time is required!")]
         [Range(1, 10000, ErrorMessage = "Please enter a valid quantity!")]

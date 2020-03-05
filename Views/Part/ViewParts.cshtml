@@ -79,7 +79,7 @@
                 @Html.DisplayFor(modelItem => item.side)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.partId }) |
+                @Html.ActionLink("Edit", "editPart", new { partId = item.partId, partName = item.partName , side = item.side }) |
                 <a href="#" onclick=deletePart('@item.partId')>Delete</a>
             </td>
         </tr>
@@ -99,7 +99,9 @@
         if (@TempData["newPartResult"] == 1)
             swal("Success!", "New part is added!", "success");
         else if (@TempData["newPartResult"] == 2)
-                    swal("Success!", "Part is deleted!", "success");
+            swal("Success!", "Part is deleted!", "success");
+              else if (@TempData["newPartResult"] == 3)
+                    swal("Success!", "Part is Updated!", "success");
         else
             swal("Error!", "An error has occurred!", "error");
 

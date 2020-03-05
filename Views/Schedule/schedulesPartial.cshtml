@@ -155,7 +155,6 @@
                     </td>
 
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
                         @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
                         @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
                     </td>
@@ -224,11 +223,9 @@
                 </td>
 
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
                     @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
                     <a href="#" onclick=deleteSchedule('@item.schedule.orderId')>Delete</a>
 
-                    @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
                 </td>
             </tr>
 

@@ -91,6 +91,79 @@ namespace Scheduler.Controllers
 
 
 
+        public ActionResult editPart(int partId, string partName, int side)
+        {
+
+         
+
+            Part part = new Part();
+
+
+            part.partId = partId;
+            part.partName = partName;
+            part.side = side;
+
+            return View(part);
+
+        }
+
+
+
+        [HttpPost, ActionName("editPart")]
+        public ActionResult editPartPost(int partId,string partName,int side)
+        {
+            var updated = 0;
+
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    updated = PartProcessor.updatePart(partId, partName, side);
+
+
+
+                    //TempData["newOrderResult"] = created;
+
+
+                    if (updated == 1)
+                    {
+                        TempData["newPartResult"] = 3;
+                    }
+                    else if (updated == 0)
+                    {
+
+                        TempData["newPartResult"] = 0;
+                    }
+
+
+
+
+
+                    return RedirectToAction("ViewParts");
+                }
+                catch (Exception ex)
+                {
+                    //  TempData["newOrderResult"] = created;
+                    //eturn View(ex.Message);
+                    TempData["newPartResult"] = 0;
+
+                    return RedirectToAction("ViewParts");
+                }
+
+            }
+
+
+
+            return RedirectToAction("ViewParts");
+
+
+
+        }
+
+
+
         public static int addNewPart(Part part)
         {
 

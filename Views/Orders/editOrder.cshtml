@@ -88,7 +88,7 @@
                     });
                 }
 
-                @Html.DropDownListFor(model => model.order.status, new SelectList(listItems, "Value", "Text"), htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.order.status, new SelectList(listItems, "Value", "Text"), htmlAttributes: new { @class = "form-control",@disabled = "disabled" })
             </div>
         </div>
 
@@ -131,7 +131,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "ViewOrders")
 </div>
 
 <script type="text/javascript">

@@ -343,6 +343,7 @@
     <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Content\_bootstrap-datetimepicker.less" />
     <Content Include="Content\bootstrap-datetimepicker-build.less" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\i18n\jquery-ui-timepicker-addon-i18n.js" />
     <Content Include="Scripts\i18n\jquery-ui-timepicker-addon-i18n.min.js" />
@@ -470,6 +471,7 @@
     <Content Include="Views\Orders\scheduledResults.cshtml" />
     <Content Include="Views\Schedule\scheduleDetails.cshtml" />
     <Content Include="Views\Schedule\schedulesPartial.cshtml" />
+    <Content Include="Views\Part\editPart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

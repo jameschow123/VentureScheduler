@@ -125,7 +125,7 @@ namespace Scheduler.Controllers
 
             bool result = CheckManufacturingTimeExistBool(selectedLine, selectedPart);
 
-            if (result == false)
+            if (result != false)
             {
                 ModelState.AddModelError("", "Error");
 
@@ -617,6 +617,8 @@ namespace Scheduler.Controllers
             {
                 if (excelfile.FileName.EndsWith("xls") || excelfile.FileName.EndsWith("xlsx"))
                 {
+                   
+
                     string path = Server.MapPath("~/Content/" + excelfile.FileName);
                     if (System.IO.File.Exists(path))
                         System.IO.File.Delete(path);
