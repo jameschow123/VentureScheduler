@@ -83,7 +83,7 @@
     {@Html.ActionLink("Start", "smtStart", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status })}
     @if (Model.status == "processing")
     {@Html.ActionLink("End", "smtEnd", new { id = Model.schedule.orderId, orderName = Model.orderName, partName = Model.partName, lineName = Model.lineName, lineId = Model.selectedLine, smtStart = Model.schedule.smtStart, smtEnd = Model.schedule.smtEnd, status = Model.status })}
-    | @Html.ActionLink("Back to List", "Index")
+    | @Html.ActionLink("Back to List", "ViewSchedules")
 </p>
 
 
