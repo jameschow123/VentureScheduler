@@ -133,7 +133,7 @@
                 console.log("success JS exeuted")
                 $("#tblLocations").html(data); // HTML DOM replace
 
-                                reloadGallery();
+                reloadGallery();
 
             }
         });
@@ -142,7 +142,7 @@
 
 
 
-    
+
 
 
 
@@ -161,191 +161,249 @@
 </head>
 <body>
 </body>
+<br/>
+<br/>
+@using (Html.BeginForm("Index", "Schedule", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+
+        <div class="form-group">
+            @Html.Label("Start date", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="date" name="startDate" id="startDate" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("End date", htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <input type="date" name="endDate" id="endDate" class="form-control" />
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Submit" class="btn btn-default" />
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+@if (TempData["index"] == null)
+{
+    <div class="row" style="width:initial; height:initial;">
+        <iframe class="embed-responsive-item" src="http://127.0.0.1:5002/getSchedule?from=1577808000000&to=1609344000000&color=Status&ref=Yes&db=ventureDB&search=" width="1050" height="400" frameborder="0" align="middle" allowfullscreen="allowfullscreen"></iframe>
+    </div>
+}
+else
+{
+    <div class="row" style="width:initial; height:initial;">
+
+        <iframe class="embed-responsive-item" src="@TempData["index"].ToString()" width="1050" height="400" align="middle" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+    </div>
+
+}
+
+
+
 @using (Html.BeginForm("ViewSchedules", "Schedule", FormMethod.Post, new { id = "submitTest" }))
 {
     <h2>View Schedules</h2>
 
-        <div class="btn-group" >
-
-            @{
-                List<SelectListItem> listItemsPriority = new List<SelectListItem>();
-                listItemsPriority.Add(new SelectListItem
-                {
-                    Text = "All status",
-                    Value = "null"
-                });
-                listItemsPriority.Add(new SelectListItem
-                {
-                    Text = "Scheduled",
-                    Value = "scheduled"
-                });
-                listItemsPriority.Add(new SelectListItem
-                {
-                    Text = "Processing",
-                    Value = "processing",
-                    Selected = true
-                });
-                listItemsPriority.Add(new SelectListItem
-                {
-                    Text = "Completed",
-                    Value = "completed"
-                });
-
-            }
-
-            @Html.DropDownList("statusDDL", new SelectList(listItemsPriority, "Value", "Text"), htmlAttributes: new { @class="btn btn-primary dropdown-toggle", @id = "statusDDL" })
-            
-            @{
-                List<SelectListItem> LineItems = new List<SelectListItem>();
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "All lines",
-                    Value = "0"
-                });
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "SMT_Line_8",
-                    Value = "1"
-                });
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "SMT_Line_9",
-                    Value = "2",
-                    Selected = true
-                });
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "SMT_Line_10",
-                    Value = "3"
-                });
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "SMT_Line_11",
-                    Value = "4"
-                });
-                LineItems.Add(new SelectListItem
-                {
-                    Text = "SMT_Line_12",
-                    Value = "5"
-                });
 
 
-            }
 
-            @Html.DropDownList("Line", new SelectList(LineItems, "Value", "Text"), htmlAttributes: new { @class="btn btn-primary dropdown-toggle", @id = "lineDDL" })
+    <div class="btn-group">
 
-        </div>
-        <br />
-        <br />
-        <div class="form-group">
+        @{
+            List<SelectListItem> listItemsPriority = new List<SelectListItem>();
+            listItemsPriority.Add(new SelectListItem
+            {
+                Text = "All status",
+                Value = "null"
+            });
+            listItemsPriority.Add(new SelectListItem
+            {
+                Text = "Scheduled",
+                Value = "scheduled"
+            });
+            listItemsPriority.Add(new SelectListItem
+            {
+                Text = "Processing",
+                Value = "processing",
+                Selected = true
+            });
+            listItemsPriority.Add(new SelectListItem
+            {
+                Text = "Completed",
+                Value = "completed"
+            });
 
-            @*  <table class="table" id="tblLocations">
+        }
+
+        @Html.DropDownList("statusDDL", new SelectList(listItemsPriority, "Value", "Text"), htmlAttributes: new { @class = "btn btn-primary dropdown-toggle", @id = "statusDDL" })
+
+        @{
+            List<SelectListItem> LineItems = new List<SelectListItem>();
+            LineItems.Add(new SelectListItem
+            {
+                Text = "All lines",
+                Value = "0"
+            });
+            LineItems.Add(new SelectListItem
+            {
+                Text = "SMT_Line_8",
+                Value = "1"
+            });
+            LineItems.Add(new SelectListItem
+            {
+                Text = "SMT_Line_9",
+                Value = "2",
+                Selected = true
+            });
+            LineItems.Add(new SelectListItem
+            {
+                Text = "SMT_Line_10",
+                Value = "3"
+            });
+            LineItems.Add(new SelectListItem
+            {
+                Text = "SMT_Line_11",
+                Value = "4"
+            });
+            LineItems.Add(new SelectListItem
+            {
+                Text = "SMT_Line_12",
+                Value = "5"
+            });
+
+
+        }
+
+        @Html.DropDownList("Line", new SelectList(LineItems, "Value", "Text"), htmlAttributes: new { @class = "btn btn-primary dropdown-toggle", @id = "lineDDL" })
+
+    </div>
+    <div class="form-group">
+
+        @*  <table class="table" id="tblLocations">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.orderName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.partName)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.lineName)
+                    </th>
+                    @*
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.BEDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.schedule.latestStartDate)
+                        </th>
+
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.schedule.smtStart)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.schedule.smtEnd)
+                    </th>
+                    <th></th>
+                </tr>
+
+
+                @foreach (var item in Model)
+                {
+                    //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
+
                     <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.orderName)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.partName)
-                        </th>
 
-                        <th>
-                            @Html.DisplayNameFor(model => model.lineName)
-                        </th>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.orderName)
+                            <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+                            <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
+
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.partName)
+                            <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
+
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.lineName)
+                            <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
+                            <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
+
+                        </td>
                         @*
-                            <th>
-                                @Html.DisplayNameFor(model => model.schedule.BEDate)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.schedule.latestStartDate)
-                            </th>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.BEDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
+                            </td>
 
+                        <td>
+                            @Html.DisplayFor(modelItem => item.schedule.smtStart)
+                            <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
 
-                        <th>
-                            @Html.DisplayNameFor(model => model.schedule.smtStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.schedule.smtEnd)
-                        </th>
-                        <th></th>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.schedule.smtEnd)
+                            <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
+
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
+                            @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
+                        </td>
                     </tr>
 
 
-                    @foreach (var item in Model)
-                    {
-                        //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
+                }
 
-                        <tr>
+            </table>
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.orderName)
-                                <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
-                                <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
+        *@
 
 
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.partName)
-                                <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
+        <div id="mydetailsTable">
+            @Html.Partial("schedulesPartial")
 
-                            </td>
-
-                            <td>
-                                @Html.DisplayFor(modelItem => item.lineName)
-                                <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
-                                <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
-
-                            </td>
-                            @*
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.schedule.BEDate)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
-                                </td>
-
-                            <td>
-                                @Html.DisplayFor(modelItem => item.schedule.smtStart)
-                                <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
-
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.schedule.smtEnd)
-                                <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
-
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.schedule.orderId }) |
-                                @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
-                            </td>
-                        </tr>
-
-
-                    }
-
-                </table>
-
-            *@
-
-
-            <div id="mydetailsTable">
-                @Html.Partial("schedulesPartial")
-
-            </div>
-
-            <input type="submit" value="Update Preference" class="btn btn-primary" />
         </div>
-        }
+
+        <input type="submit" value="Update Preference" class="btn btn-primary" />
+    </div>
+}
 

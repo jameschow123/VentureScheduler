@@ -1,0 +1,236 @@
+﻿@model IEnumerable<Scheduler.ViewModel.linePartScheduleViewModel>
+
+@{
+    ViewBag.Title = "View";
+    Layout = null;
+}
+
+
+<script type="text/javascript">
+
+
+     function deleteSchedule(orderId) {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you order will be marked as unscheduled!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        data: { 'orderId': orderId },
+                        url: "/Schedule/deletescheduleJson",
+                        dataType: "json",
+                        success: function (response) {
+                            swal("Order has been marked unscheduled!", {
+                                icon: "success",
+                            }).then(function () {
+                                window.location.href = "/Schedule/ViewSchedules"
+                            });
+
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+
+                }
+                else {
+                     swal("Operation aborted!");
+                }
+            });
+        }
+
+</script>
+
+<p>
+
+</p>
+<table class="table" id="tblLocations">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.orderName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.partName)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.lineName)
+        </th>
+        @*
+            <th>
+                @Html.DisplayNameFor(model => model.schedule.BEDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.schedule.earlistStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.schedule.plannedStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.schedule.latestStartDate)
+            </th>
+
+        *@
+        <th>
+            @Html.DisplayNameFor(model => model.schedule.smtStart)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.schedule.smtEnd)
+        </th>
+        <th>
+
+            @Html.DisplayNameFor(model => model.status)
+
+        </th>
+    </tr>
+
+
+    @foreach (var item in Model)
+    {
+        //@Html.HiddenFor(modelItem => item.schedule.orderId, new { @class = "id" })
+        if (item.schedule.smtStart > item.schedule.latestStartDate) //LATE!
+        {
+            <tr class="statusLate">
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderName)
+                    <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+                    <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
+
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.partName)
+                    <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.lineName)
+                    <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
+                    <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
+
+                </td>
+                @*
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.BEDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
+                    </td>
+                *@
+                <td>
+
+
+                    @Html.DisplayFor(modelItem => item.schedule.smtStart)
+                    <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
+
+
+
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.schedule.smtEnd)
+                    <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                    <input type="hidden" name="status" id="@item.status" value=" @item.status" />
+
+                </td>
+
+                <td>
+                    @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.schedule.orderId })
+                </td>
+            </tr>
+
+        }
+        else
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderName)
+                    <input type="hidden" name="orderId" id="@item.schedule.orderId" value=" @item.schedule.orderId" />
+                    <input type="hidden" name="orderName" id="@item.orderName" value=" @item.orderName" />
+
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.partName)
+                    <input type="hidden" name="partName" id="@item.partName" value=" @item.partName" />
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.lineName)
+                    <input type="hidden" name="lineName" id="@item.lineName" value=" @item.lineName" />
+                    <input type="hidden" name="lineName" id="@item.schedule.lineId" value=" @item.schedule.lineId" />
+
+                </td>
+                @*
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.BEDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.earlistStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.plannedStartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.schedule.latestStartDate)
+                    </td>
+                *@
+                <td>
+
+
+                    @Html.DisplayFor(modelItem => item.schedule.smtStart)
+                    <input type="hidden" name="smtStart" id="@item.schedule.smtStart" value=" @item.schedule.smtStart" />
+
+
+
+
+
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.schedule.smtEnd)
+                    <input type="hidden" name="smtEnd" id="@item.schedule.smtEnd" value=" @item.schedule.smtEnd" />
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                    <input type="hidden" name="status" id="@item.status" value=" @item.status" />
+
+                </td>
+
+                <td>
+                    @Html.ActionLink("Details", "scheduleDetails", new { id = item.schedule.orderId, orderName = item.orderName, partName = item.partName, lineName = item.lineName, lineId = item.schedule.lineId, smtStart = item.schedule.smtStart, smtEnd = item.schedule.smtEnd }) |
+                    <a href="#" onclick=deleteSchedule('@item.schedule.orderId')>Delete</a>
+
+                </td>
+            </tr>
+
+        }
+
+    }
+
+</table>

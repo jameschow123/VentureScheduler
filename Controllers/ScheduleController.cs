@@ -324,6 +324,14 @@ namespace Scheduler.Controllers
             }
 
 
+            //RandInIt
+            /*
+            Random randomLine = new Random();
+            int MDataTemp = randomLine.Next(0, 4);
+            */
+            //FCFSInIt
+            //int MDataTemp = 0;
+
             // iterate though the new ordered list
             for (int i = 0; i < orders.Count; i++)
             {
@@ -338,6 +346,8 @@ namespace Scheduler.Controllers
                 if (MTData.Count == 0 | MTData == null)
                     continue;
 
+                // Earliest line first (main allocation technique)
+                
                 int fastestProcessingLine = -1;
                 int totalSMTTime = -1;
                 DateTime smtEndDate = DateTime.MaxValue;
@@ -369,6 +379,70 @@ namespace Scheduler.Controllers
                     }
 
                 }
+                
+
+
+                //testing code FCFS here, remove from top //FCFSInIt
+                /*
+                int fastestProcessingLine = -1;
+                int totalSMTTime = -1;
+                DateTime smtEndDate = DateTime.MaxValue;
+                if (MDataTemp < MTData.Count)
+                {
+                    ManufacturingTime MT = new ManufacturingTime { lineId = MTData[MDataTemp].lineId, manufacturingTIme = MTData[MDataTemp].manufacturingTime };
+
+                    int lineSMTTime = calculateTotalSMTTIme(MT.manufacturingTIme, order.quantity);
+                    Schedule currentLineFirstSchedule = existingScheduleList.Find(x => x.lineId == MT.lineId);
+                    DateTime linePredictedSMTEnd = currentLineFirstSchedule.smtStart.AddSeconds(lineSMTTime);
+
+                    smtEndDate = linePredictedSMTEnd;
+                    totalSMTTime = lineSMTTime;
+                    fastestProcessingLine = MT.lineId;
+
+                    MDataTemp += 1;
+                }
+                else
+                {
+
+                    MDataTemp= 0;
+
+
+                    ManufacturingTime MT = new ManufacturingTime { lineId = MTData[MDataTemp].lineId, manufacturingTIme = MTData[MDataTemp].manufacturingTime };
+
+                    int lineSMTTime = calculateTotalSMTTIme(MT.manufacturingTIme, order.quantity);
+                    Schedule currentLineFirstSchedule = existingScheduleList.Find(x => x.lineId == MT.lineId);
+
+                    DateTime linePredictedSMTEnd = currentLineFirstSchedule.smtStart.AddSeconds(lineSMTTime);
+
+                    smtEndDate = linePredictedSMTEnd;
+                    totalSMTTime = lineSMTTime;
+                    fastestProcessingLine = MT.lineId;
+
+                }
+
+                */
+
+                //random allocation here, remove comment from top of for loop //randInIt 
+                /*
+                int fastestProcessingLine = -1;
+                int totalSMTTime = -1;
+                DateTime smtEndDate = DateTime.MaxValue;
+                if (MDataTemp < MTData.Count)
+                {
+                    ManufacturingTime MT = new ManufacturingTime { lineId = MTData[MDataTemp].lineId, manufacturingTIme = MTData[MDataTemp].manufacturingTime };
+
+                    int lineSMTTime = calculateTotalSMTTIme(MT.manufacturingTIme, order.quantity);
+                    Schedule currentLineFirstSchedule = existingScheduleList.Find(x => x.lineId == MT.lineId);
+                    DateTime linePredictedSMTEnd = currentLineFirstSchedule.smtStart.AddSeconds(lineSMTTime);
+
+                    smtEndDate = linePredictedSMTEnd;
+                    totalSMTTime = lineSMTTime;
+                    fastestProcessingLine = MT.lineId;
+
+                    MDataTemp = randomLine.Next(0, 4);
+                }
+             */
+
 
                 DateTime smtStartDate = smtEndDate.AddSeconds(-totalSMTTime);
 
@@ -991,7 +1065,7 @@ namespace Scheduler.Controllers
                         // Planned startdate = earliest start date or SMendDate. 
                         schedule.plannedStartDate = data[0].SMTEnd.AddHours(1);
                         */
-
+                        
                     }
                     else
                     {
